@@ -107,8 +107,8 @@ else {
   foreach ($friends as $friend) {
     $contents .= '<div class="player">
                     <h3>' . $friend['username'] . '</h3>
-                    <a href=send.php"><span class="fa fa-comments"></span> Send Message</a>
-                    <a href=invite.php"><span class="fa fa-ship"></span> Challenge</a>
+                    <a href="send.php"><span class="fa fa-comments"></span> Send Message</a>
+                    <a href="invite.php"><span class="fa fa-ship"></span> Challenge</a>
                     <form method="post" action="">
                       <input type="hidden" name="unfriend" value="' . $friend['player_id'] . '" />
                       <input type="submit" value="Unfriend" />

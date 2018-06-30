@@ -715,8 +715,7 @@ class Player
 
 				// Old:
 				// (0 == strcmp(self::hash_password($_POST['password']), $password)
-				if (password_verify($_POST['password'], $password)
-					&& (0 == strcmp(self::hash_alt_pass($_POST['password']), $alt_pass)))
+				if (password_verify($_POST['password'], $password))
 				{
 					$this->id = (int) $id;
 					$this->_pull( );
