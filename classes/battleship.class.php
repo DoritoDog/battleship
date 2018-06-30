@@ -193,28 +193,29 @@ class Battleship
 	/** Tests to see if the selected coordinate will result in a hit.
 	 * @return bool
 	 */
-	public function test_hit($coordinate) {
+	public function test_hit($coordinate, $return_string = false) {
 		call(__METHOD__);
 
 		// get the item at the location
 		$site = $this->board[$coordinate];
+		
 		// test the location for previous action
 		switch ($site) {
 			// if we alreay shot this target
 			case 'X' : // no break
 			case 'Y' :
 				throw new MyException(__METHOD__.': Already shot that target');
-				return false;
+				return $return_string ? 'false' : false;
 				break;
 				
 			// if we missed
 			case '0' :
-				return false;
+				return $return_string ? 'false' : false;
 				break;
 
 			// anything else must be a hit
 			default :
-				return true;
+				return $return_string ? 'true' : true;
 				break;
 		}
 	}

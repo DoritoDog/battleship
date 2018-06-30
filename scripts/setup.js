@@ -178,7 +178,7 @@ function run_ajax( ) {
 				return;
 			}
 
-			canPlaceSingleBoats = reply.method === 'Russian' &&
+			canPlaceSingleBoats = reply.fleetType === 'Russian' &&
 														!objContains(reply.missingBoats, ['a', 'e', 'h', 'k', 'm', 'o']);
 
 			if ('RELOAD' == reply.action) {
@@ -211,7 +211,7 @@ window.onload = () => {
 
 			const reply = JSON.parse(msg);
 
-			canPlaceSingleBoats = reply.method === 'Russian' &&
+			canPlaceSingleBoats = reply.fleetType === 'Russian' &&
 														!objContains(reply.missingBoats, ['a', 'e', 'h', 'k', 'm', 'o']);
 		}
 	});

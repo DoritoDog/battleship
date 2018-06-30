@@ -51,15 +51,21 @@ foreach ($players_full as $player) {
 	}
 }
 
-$methods = array(
+$methods = [
 	'Five',
 	'Salvo',
 	'Single',
-	'Russian',
-);
+	'Multi',
+];
 $method_selection = '';
 foreach ($methods as $method) {
 	$method_selection .= '<option value="'.$method.'">'.$method.'</option>';
+}
+
+$fleet_types = ['Classic', 'Russian'];
+$fleet_selection = '';
+foreach ($fleet_types as $fleet) {
+	$fleet_selection .= '<option value="'.$fleet.'">'.$fleet.'</option>';
 }
 
 
@@ -73,6 +79,9 @@ $hints = array(
 	'Salvo means you get one shot per ship per turn.  If you have two ships sunk, then you\'ll get 3 shots this turn.' ,
 	'Five means you get five shots per turn, no matter what.' ,
 	'Single means that you get one shot per turn.  This is the original method for Battleship, but may take a long time online.' ,
+	'Multi means that you get one shot per turn unless you hit, in that case you will be rewarded with another shot.',
+	'Classic mode has the 5 classic battleships: Carrier, Battleship, Cruiser, Submarine and Destroyer.',
+	'Russian mode has one 4 tile ship, two 3 tile ships, three 2 tile ships and four 1 tile ships. You can play Russian mode with all methods except for Five.',
 	'<span class="highlight">WARNING!</span><br />Games will be deleted after '.Settings::read('expire_games').' days of inactivity.' ,
 );
 
@@ -93,6 +102,10 @@ $contents = <<< EOF
 
 		<div><label for="opponent">Opponent</label><select id="opponent" name="opponent">{$opponent_selection}</select></div>
 		<div><label for="method">Method</label><select id="method" name="method">{$method_selection}</select></div>
+		<div>
+			<label for="fleet_type">Fleet Type</label>
+			<select id="fleet_type" name="fleet_type">{$fleet_selection}</select>
+		</div>
 
 		{$submit_button}
 

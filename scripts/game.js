@@ -49,6 +49,7 @@ if (my_turn) {
 	$('div.active div.second div.row:not(div.top, div.bottom) div:not(div.side):not(div:has(img))').click( function(evnt) {
 		var $this = $(this);
 		var id = $this.attr('id').slice(4);
+		let didHit = false;
 
 		// are we adding or removing the square
 		if ($this.hasClass('curshot')) { // removing square
@@ -69,39 +70,73 @@ if (my_turn) {
 			$shots.val(value);
 			--shots;
 
-			// Send the shot message.
-			$.post("game.php", { shot: id }, (data, status) => {});
-		}
+			// Sending one hit for validation.
+			$.post("game.php", { shot: id }, (data, status) => {
+				const index = data.indexOf('}') + 1;
+				const response = JSON.parse(data.slice(0, index));
+				didHit = response.value === 'true' ? true : false;
 
-		// update the shot markers
-		update_shots( );
+				// update the shot markers
+				update_shots();
+				
+				if (gameMode == 'Multi' && didHit) {
+					shots++;
+					$this.html('');
+					$this.append('<img src="images/hit.gif" />');
+				}
+				else if (gameMode == 'Multi' && !didHit) {
+					
+					// Submitting all hits.
+					$.ajax({
+						type: 'POST',
+						url: 'ajax_helper.php',
+						data: $('form#game').serialize(),
+						success: function(msg) {
+							// if something happened, just reload
+							if (msg[0] != '{') {
+								alert('ERROR: AJAX failed!' + msg);
+							}
 
-		// run the shots
-		if (shots == 0) {
-			if (debug) {
-				window.location = 'ajax_helper.php'+debug_query+'&'+$('form#game').serialize();
-				return;
-			}
+							const reply = JSON.parse(msg);
 
-			$.ajax({
-				type: 'POST',
-				url: 'ajax_helper.php',
-				data: $('form#game').serialize( ),
-				success: function(msg) {
-					// if something happened, just reload
-					if (msg[0] != '{') {
-						alert('ERROR: AJAX failed!' + msg);
+							if (reply.error) {
+								alert(reply.error);
+							}
+
+							if (reload) { window.location.reload( ); }
+							return;
+						},
+					});
+				}
+				
+				// run the shots
+				if (gameMode != 'Multi' && shots == 0) {
+					if (debug) {
+						window.location = 'ajax_helper.php'+debug_query+'&'+$('form#game').serialize();
+						return;
 					}
 
-					const reply = JSON.parse(msg);
+					$.ajax({
+						type: 'POST',
+						url: 'ajax_helper.php',
+						data: $('form#game').serialize( ),
+						success: function(msg) {
+							// if something happened, just reload
+							if (msg[0] != '{') {
+								alert('ERROR: AJAX failed!' + msg);
+							}
 
-					if (reply.error) {
-						alert(reply.error);
-					}
+							const reply = JSON.parse(msg);
 
-					if (reload) { window.location.reload( ); }
-					return;
-				},
+							if (reply.error) {
+								alert(reply.error);
+							}
+
+							if (reload) { window.location.reload( ); }
+							return;
+						},
+					});
+				}
 			});
 		}
 
@@ -250,12 +285,12 @@ if ( ! my_turn && ('finished' != state)) {
 update_shots( );
 
 if (pre_hide_board) {
-	$('div.active div.first').click( );
+	$('div.active div.first').click();
 }
 
 
-function update_shots( ) {
-	$('span.shots img').remove( );
+function update_shots() {
+	$('span.shots img').remove();
 	for (var i = 0; i < shots; ++i) {
 		$('span.shots').append('<img src="images/hit.gif" />');
 	}

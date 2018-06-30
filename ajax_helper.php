@@ -210,7 +210,7 @@ if (isset($_POST['method'])) {
 			$return['board'] = $Game->get_board_html('first', true);
 			$return['boats'] =  $Game->get_boats_html();
 			$return['missingBoats'] = $Game->get_missing_boats(true);
-			$return['method'] = $Game->method;
+			$return['fleetType'] = $Game->fleet_type;
 		}
 	}
 	catch (MyException $e) {

@@ -47,6 +47,7 @@ catch (MyException $e) {
 	exit;
 }
 
+
 if (isset($_POST['shot'])) {
 	$coordinate = $_POST['shot'];
 	$game_id = $_SESSION['game_id'];
@@ -55,17 +56,13 @@ if (isset($_POST['shot'])) {
 		'game_id' => $game_id,
 		'coordinate' => $coordinate,
 	];
+
+	$response = new stdClass();
+	$response->value = $Game->test_hit($coordinate, true);
+	echo json_encode($response);
 	Mysql::get_instance()->insert('shots', $args);
-	
-	// The mode is single
-	// if (count($_POST['shot']) == 1) {
-	// 	Mysql::get_instance()->insert('single_shots', ['shot_id' => $shot_id]);
-		
-	// 	$response = new stdClass();
-	// 	$response->shot_id = $shot_id;
-	// 	echo json_encode($response);
-	// }
 }
+
 
 $players = $Game->get_players( );
 $Chat = new Chat($_SESSION['player_id'], $_SESSION['game_id']);
@@ -152,7 +149,7 @@ if (('Finished' != $Game->state) && $Game->get_my_turn( ) && ! $no_turn) {
 	$info_bar .= ' <span class="shots">'.$Game->method.' '.plural($shots, 'Shot').': </span>';
 }
 
-$total_boats = $Game->method == 'Russian' ? 10 : 5;
+$total_boats = $Game->fleet_type == 'Russian' ? 10 : 5;
 $player_boats = $total_boats - count($Game->get_missing_boats($mine = true));
 $opponent_boats = $total_boats - count($Game->get_missing_boats($mine = false));
 
