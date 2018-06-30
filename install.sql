@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS themes
     PRIMARY KEY(`id`)
 );
 
+-- test
+
 --
 -- Table structure for table `bs2_bs_player`
 --
