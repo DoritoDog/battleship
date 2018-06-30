@@ -229,7 +229,8 @@ EOF;
 				<li'.get_active('prefs').'><a href="prefs.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Preferences</a></li>
 				<li'.get_active('profile').'><a href="profile.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Profile</a></li>
 				<li'.get_active('friends').'>
-					<a href="friends.php'.$GLOBALS['_?_DEBUG_QUERY'].'">
+					<a href="friends.php'.$GLOBALS['_?_DEBUG_QUERY'].'" class="'
+						 . ($menu_data['friend_requests'] ? 'blink' : '') . '">
 						Friends ( ' . $menu_data['friend_requests'] . ' | ' . $menu_data['friends'] . ' )
 					</a>
 				</li>
