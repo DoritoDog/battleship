@@ -23,6 +23,19 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `themes`
+--
+
+CREATE TABLE IF NOT EXISTS themes
+(
+    `id` int NOT NULL AUTO_INCREMENT,
+    `name` varchar(30) NOT NULL,
+    description text,
+    `filesdir` varchar(255) NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+--
 -- Table structure for table `bs2_bs_player`
 --
 
@@ -33,10 +46,12 @@ CREATE TABLE IF NOT EXISTS `bs2_bs_player` (
   `pre_hide_board` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `max_games` tinyint(3) NOT NULL DEFAULT '0',
   `color` varchar(25) COLLATE latin1_general_ci NOT NULL DEFAULT 'blue_white',
+  `skin_id` int NOT NULL,
   `wins` smallint(5) unsigned NOT NULL DEFAULT '0',
   `losses` smallint(5) unsigned NOT NULL DEFAULT '0',
   `last_online` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `id` (`player_id`)
+  UNIQUE KEY `id` (`player_id`),
+  FOREIGN KEY (`skin_id`) REFERENCES themes.id
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 -- --------------------------------------------------------
@@ -256,18 +271,6 @@ CREATE TABLE IF NOT EXISTS `friend_requests`
   FOREIGN KEY (`reciever_id`) REFERENCES player.player_id
 );
 
---
--- Table structure for table `themes`
---
-
-CREATE TABLE themes
-(
-    id int NOT NULL AUTO_INCREMENT,
-    `name` varchar(30) NOT NULL,
-    description text,
-    filesdir varchar(255) NOT NULL,
-    PRIMARY KEY(id)
-);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
