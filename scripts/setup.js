@@ -1,6 +1,7 @@
 
 var reload = true; // do not change this
 var id1 = -1;
+var canPlaceSingleBoats = false;
 
 $(document).ready( function( ) {
 
@@ -27,23 +28,30 @@ $(document).ready( function( ) {
 		else { // adding square
 			$this.toggleClass('curshot');
 
-			if (-1 == id1) {
-				id1 = id;
+			if (canPlaceSingleBoats) {
+				$('#method').val('single_boat');
+				$('#value').val(id);
+				run_ajax();
 			}
 			else {
-				// test the two squares for validity
-				if ((id1.slice(0, 1) != id.slice(0, 1)) && (id1.slice(1) != id.slice(1))) {
-					alert('The two squares MUST be on the same line.\nEither horizontal or vertical.\n\nPlease try again.');
+				if (-1 == id1) {
+					id1 = id;
+				}
+				else {
+					// test the two squares for validity
+					if ((id1.slice(0, 1) != id.slice(0, 1)) && (id1.slice(1) != id.slice(1))) {
+						alert('The two squares MUST be on the same line.\nEither horizontal or vertical.\n\nPlease try again.');
+						return false;
+					}
+	
+					// we made it here, fill in the form and ajax it off
+					$('#method').val('between');
+					$('#value').val(id1+':'+id);
+	
+					run_ajax();
+	
 					return false;
 				}
-
-				// we made it here, fill in the form and ajax it off
-				$('#method').val('between');
-				$('#value').val(id1+':'+id);
-
-				run_ajax( );
-
-				return false;
 			}
 		}
 
@@ -125,6 +133,15 @@ function clear_form( ) {
 	$('div.curshot').removeClass('curshot');
 }
 
+function objContains(obj, keys) {
+	let returnValue = false;
+	keys.forEach(key => {
+		if (key in obj)
+			returnValue = true;
+	});
+
+	return returnValue;
+}
 
 /* function run_ajax
  *		Serializes the form data and sends it off
@@ -134,6 +151,7 @@ function clear_form( ) {
  * @action runs ajax and possibly refreshes page or refreshes html
  * @return null
  */
+
 function run_ajax( ) {
 	if (debug) {
 		window.location = 'ajax_helper.php'+debug_query+'&'+$('.forms form').serialize( );
@@ -146,7 +164,8 @@ function run_ajax( ) {
 		data: $('.forms form').serialize( ),
 		success: function(msg) {
 			// if something happened, just reload
-			if ('{' != msg[0]) {
+			if (msg[0] != '{') {
+				alert(msg);
 				if (reload) { window.location.reload( ); }
 				return;
 			}
@@ -158,6 +177,9 @@ function run_ajax( ) {
 				if (reload) { window.location.reload( ); }
 				return;
 			}
+
+			canPlaceSingleBoats = reply.method === 'Russian' &&
+														!objContains(reply.missingBoats, ['a', 'e', 'h', 'k', 'm', 'o']);
 
 			if ('RELOAD' == reply.action) {
 				if (reload) { window.location.reload( ); }
@@ -176,3 +198,21 @@ function run_ajax( ) {
 
 	return;
 }
+
+window.onload = () => {
+	$.ajax({
+		type: 'POST',
+		url: 'ajax_helper.php',
+		data: $('.forms form').serialize(),
+		success: function(msg) {
+			if (msg[0] != '{') {
+				return;
+			}
+
+			const reply = JSON.parse(msg);
+
+			canPlaceSingleBoats = reply.method === 'Russian' &&
+														!objContains(reply.missingBoats, ['a', 'e', 'h', 'k', 'm', 'o']);
+		}
+	});
+};

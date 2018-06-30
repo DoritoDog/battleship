@@ -122,7 +122,7 @@ foreach ($player_list as $key => $player) {
 	list($player['games'], $player['turn']) = Game::get_my_count($player['player_id']);
 
 	$player['played'] = $player['wins'] + $player['losses'];
-
+	
 	$player_list[$key] = $player;
 }
 

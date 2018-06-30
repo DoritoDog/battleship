@@ -55,6 +55,7 @@ $methods = array(
 	'Five',
 	'Salvo',
 	'Single',
+	'Russian',
 );
 $method_selection = '';
 foreach ($methods as $method) {

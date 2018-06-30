@@ -42,6 +42,8 @@ for (var i in prev_shots) {
 	}
 }
 
+let lastShotId = 0;
+
 // make the board clicks work
 if (my_turn) {
 	$('div.active div.second div.row:not(div.top, div.bottom) div:not(div.side):not(div:has(img))').click( function(evnt) {
@@ -66,15 +68,18 @@ if (my_turn) {
 			value.join(',');
 			$shots.val(value);
 			--shots;
+
+			// Send the shot message.
+			$.post("game.php", { shot: id }, (data, status) => {});
 		}
 
 		// update the shot markers
 		update_shots( );
 
 		// run the shots
-		if (0 == shots) {
+		if (shots == 0) {
 			if (debug) {
-				window.location = 'ajax_helper.php'+debug_query+'&'+$('form#game').serialize( );
+				window.location = 'ajax_helper.php'+debug_query+'&'+$('form#game').serialize();
 				return;
 			}
 
@@ -84,11 +89,11 @@ if (my_turn) {
 				data: $('form#game').serialize( ),
 				success: function(msg) {
 					// if something happened, just reload
-					if ('{' != msg[0]) {
-						alert('ERROR: AJAX failed');
+					if (msg[0] != '{') {
+						alert('ERROR: AJAX failed!' + msg);
 					}
 
-					var reply = JSON.parse(msg);
+					const reply = JSON.parse(msg);
 
 					if (reply.error) {
 						alert(reply.error);
@@ -96,7 +101,7 @@ if (my_turn) {
 
 					if (reload) { window.location.reload( ); }
 					return;
-				}
+				},
 			});
 		}
 
@@ -122,8 +127,7 @@ $('#nudge').click( function( ) {
 
 				if (reply.error) {
 					alert(reply.error);
-				}
-				else {
+				} else {
 					alert('Nudge Sent');
 				}
 
@@ -154,7 +158,7 @@ $('#resign').click( function( ) {
 				if (reply.error) {
 					alert(reply.error);
 				}
-
+				
 				if (reload) { window.location.reload( ); }
 			}
 		});
@@ -257,9 +261,29 @@ function update_shots( ) {
 	}
 }
 
+function playTurnSound() {
+	var audio = new Audio('sounds/turn.mp3');
+	audio.play();
+}
+
+var highestShotId = 0;
 
 function ajax_refresh( ) {
 	// no debug redirect, just do it
+
+	// Keep checking for shots.
+	$.post('ajax_helper.php', { get_shots: 1 }, (data, status) => {
+		const response = JSON.parse(data);
+		// If there are no shots, ajax_helper.php returns [].
+		if (response.length !== 0 && response.id > highestShotId) {
+			highestShotId = response.id;
+
+			let flash = response.hit ? 'flash-hit' : 'flash-miss';
+			$('#contents').addClass(flash);
+			// Remove the class after one second.
+			setTimeout(() => { $('#contents').removeClass(flash) }, 1000);
+		}
+	});
 
 	$.ajax({
 		type: 'POST',
@@ -267,8 +291,13 @@ function ajax_refresh( ) {
 		data: 'refresh=1',
 		success: function(msg) {
 			if (msg != last_move) {
+				// The turns have changed. Play the sound.
+				playTurnSound();
+
 				// don't just reload( ), it tries to submit the POST again
-				if (reload) { window.location = window.location.href; }
+				if (reload) {
+					setTimeout(() => { window.location = window.location.href; }, 1000);
+				}
 			}
 		}
 	});

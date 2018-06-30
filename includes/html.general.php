@@ -44,6 +44,8 @@ function get_header($meta = null) {
 				'out_vites' => 0,
 				'new_msgs' => 0,
 				'msgs' => 0,
+				'friend_requests' => 0,
+				'friends' => 0
 			);
 
 			$list = Game::get_list($_SESSION['player_id']);
@@ -73,6 +75,14 @@ function get_header($meta = null) {
 					}
 				}
 			}
+
+			$friends_query = "SELECT * FROM `friend_requests` WHERE `reciever_id` = " . $_SESSION['player_id'];
+			$friend_requests = count(Mysql::get_instance()->fetch_array($friends_query));
+			$menu_data['friend_requests'] = $friend_requests;
+
+			$friends_query = "SELECT * FROM `friends` WHERE `player_id` = " . $_SESSION['player_id'];
+			$friends = count(Mysql::get_instance()->fetch_array($friends_query));
+			$menu_data['friends'] = $friends;
 
 			$messages = Message::get_count($_SESSION['player_id']);
 			$menu_data['msgs'] = (int) @$messages[0];
@@ -175,6 +185,8 @@ function get_header($meta = null) {
 	</style>
 
 	<link rel="stylesheet" type="text/css" media="screen" href="css/layout.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="css/StyleSheet.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 	{$head_data}
 	{$flash}
@@ -203,12 +215,24 @@ EOF;
 			$html .= '
 		<nav id="menu" class="box">
 			<ul>
-				<li'.get_active('index').'><a href="index.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(Your Turn | Your Games | Total Games)"'.(($allow_blink && $menu_data['my_turn']) ? ' class="blink"' : '').'>Games <span class="sep">(</span> '.$menu_data['my_turn'].' <span class="sep">|</span> '.$menu_data['my_games'].' <span class="sep">|</span> '.$menu_data['games'].' <span class="sep">)</span></a></li>
-				<li'.get_active('invite').'><a href="invite.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(Received | Sent)"'.(($allow_blink && $menu_data['in_vites']) ? ' class="blink"' : '').'>Invitations <span class="sep">(</span> '.$menu_data['in_vites'].' <span class="sep">|</span> '.$menu_data['out_vites'].' <span class="sep">)</span></a></li>
-				<li'.get_active('messages', 'read', 'send').'><a href="messages.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(New Messages | Total Messages)"'.(($allow_blink && $menu_data['new_msgs']) ? ' class="blink"' : '').'>Messages <span class="sep">(</span> '.$menu_data['new_msgs'].' <span class="sep">|</span> '.$menu_data['msgs'].' <span class="sep">)</span></a></li>
+				<li'.get_active('index').'>
+					<a href="index.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(Your Turn | Your Games | Total Games)"'.(($allow_blink && $menu_data['my_turn']) ? ' class="blink"' : '').'>Games <span class="sep">(</span> '.$menu_data['my_turn'].' <span class="sep">|</span> '.$menu_data['my_games'].' <span class="sep">|</span> '.$menu_data['games'].' <span class="sep">)</span></a>
+				</li>
+
+				<li'.get_active('invite').'><a href="invite.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(Received | Sent)"'.(($allow_blink && $menu_data['in_vites']) ? ' class="blink"' : '').'>Invitations <span class="sep">(</span> '.$menu_data['in_vites'].' <span class="sep">|</span> '.$menu_data['out_vites'].' <span class="sep">)</span></a>
+				</li>
+
+				<li'.get_active('messages', 'read', 'send').'><a href="messages.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(New Messages | Total Messages)"'.(($allow_blink && $menu_data['new_msgs']) ? ' class="blink"' : '').'>Messages <span class="sep">(</span> '.$menu_data['new_msgs'].' <span class="sep">|</span> '.$menu_data['msgs'].' <span class="sep">)</span></a>
+				</li>
+
 				<li'.get_active('stats').'><a href="stats.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Statistics</a></li>
 				<li'.get_active('prefs').'><a href="prefs.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Preferences</a></li>
 				<li'.get_active('profile').'><a href="profile.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Profile</a></li>
+				<li'.get_active('friends').'>
+					<a href="friends.php'.$GLOBALS['_?_DEBUG_QUERY'].'">
+						Friends ( ' . $menu_data['friend_requests'] . ' | ' . $menu_data['friends'] . ' )
+					</a>
+				</li>
 				';
 
 				if (true == $GLOBALS['Player']->is_admin) {

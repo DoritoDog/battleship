@@ -71,15 +71,15 @@ CREATE TABLE IF NOT EXISTS `bs2_game` (
   `state` enum('Waiting','Placing','Playing','Finished') COLLATE latin1_general_ci NOT NULL DEFAULT 'Waiting',
   `white_ready` tinyint(1) NOT NULL DEFAULT '0',
   `black_ready` tinyint(1) NOT NULL DEFAULT '0',
-  `method` enum('Single','Five','Salvo') COLLATE latin1_general_ci NOT NULL DEFAULT 'Single',
+  `method` enum('Single','Five','Salvo','Russian') COLLATE latin1_general_ci NOT NULL DEFAULT 'Single',
   `paused` tinyint(1) NOT NULL DEFAULT '0',
-  `create_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `modify_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modify_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`game_id`),
   KEY `state` (`state`),
   KEY `white_id` (`white_id`),
   KEY `black_id` (`black_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 -- --------------------------------------------------------
 
@@ -202,8 +202,7 @@ CREATE TABLE IF NOT EXISTS `player` (
   `email` varchar(100) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `timezone` varchar(255) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `is_admin` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `password` varchar(32) COLLATE latin1_general_ci NOT NULL DEFAULT '',
-  `alt_pass` varchar(32) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `password` varchar(255) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `ident` varchar(32) COLLATE latin1_general_ci DEFAULT NULL,
   `token` varchar(32) COLLATE latin1_general_ci DEFAULT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -212,6 +211,63 @@ CREATE TABLE IF NOT EXISTS `player` (
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci ;
+
+--
+-- Table structure for table `shots`
+--
+
+CREATE TABLE IF NOT EXISTS `shots`
+(
+  `id` int NOT NULL AUTO_INCREMENT,
+  `player_id` int NOT NULL,
+  `game_id` int NOT NULL,
+  `coordinate` int NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`player_id`) REFERENCES player.player_id,
+  FOREIGN KEY (`game_id`) REFERENCES bs2_game.game_id
+);
+
+--
+-- Table structure for table `friends`
+--
+
+CREATE TABLE IF NOT EXISTS `friends`
+(
+  `id` int NOT NULL AUTO_INCREMENT,
+  `player_id` int NOT NULL,
+  `friend_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`player_id`) REFERENCES player.player_id,
+  FOREIGN KEY (`friend_id`) REFERENCES player.player_id
+);
+
+--
+-- Table structure for table `friends`
+--
+
+CREATE TABLE IF NOT EXISTS `friend_requests`
+(
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sender_id` int NOT NULL,
+  `reciever_id` int NOT NULL,
+  `sent` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`sender_id`) REFERENCES player.player_id,
+  FOREIGN KEY (`reciever_id`) REFERENCES player.player_id
+);
+
+--
+-- Table structure for table `themes`
+--
+
+CREATE TABLE themes
+(
+    id int NOT NULL AUTO_INCREMENT,
+    `name` varchar(30) NOT NULL,
+    description text,
+    filesdir varchar(255) NOT NULL,
+    PRIMARY KEY(id)
+);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -18,9 +18,7 @@ $meta['head_data'] = '
 		var turn_msg_count = '.$turn_msg_count.';
 	//]]></script>
 ';
-$meta['foot_data'] = '
-	<div id="sounds"></div>
-';
+$meta['foot_data'] = '<div id="sounds"></div>';
 
 
 // grab the list of games

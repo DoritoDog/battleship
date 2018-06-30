@@ -75,6 +75,14 @@ class GamePlayer
 	protected $color;
 
 
+	/** protected property skin_id
+	 * 		Holds the id of the `themes` table selected
+	 * 
+	 * @var int
+	 */
+	protected $skin_id;
+
+
 	/** protected property wins
 	 *		Holds the players win count
 	 *
@@ -346,6 +354,7 @@ class GamePlayer
 				, pre_hide_board
 				, max_games
 				, color
+				, skin_id
 			FROM ".self::EXTEND_TABLE."
 			WHERE player_id = '{$this->id}'
 		";
@@ -374,6 +383,10 @@ class GamePlayer
 			$update_player['color'] = $this->color;
 		}
 
+		if ($player['skin_id'] != $this->skin_id) {
+			$update_player['skin_id'] = $this->skin_id;
+		}
+
 		if ($update_player) {
 			$this->_mysql->insert(self::EXTEND_TABLE, $update_player, " WHERE player_id = '{$this->id}' ");
 		}
@@ -400,10 +413,10 @@ class GamePlayer
 		";
 		$result = $this->_mysql->fetch_assoc($query);
 
-		if ( ! $result) {
-// TODO: find out what is going on here and fix.
-#			throw new MyException(__METHOD__.': Data not found in database (#'.$this->id.')');
-return false;
+		if (!$result) {
+			// TODO: find out what is going on here and fix.
+			#			throw new MyException(__METHOD__.': Data not found in database (#'.$this->id.')');
+			return false;
 		}
 
 		$this->is_admin = ( ! $this->is_admin) ? (bool) $result['is_admin'] : true;
@@ -415,6 +428,7 @@ return false;
 		$this->wins = (int) $result['wins'];
 		$this->losses = (int) $result['losses'];
 		$this->last_online = strtotime($result['last_online']);
+		$this->skin_id = (int) $result['skin_id'];
 
 		// grab the player's current game count
 		$query = "
@@ -450,14 +464,15 @@ return false;
 
 		$query = "
 			SELECT *
-				, P.is_admin AS full_admin
-				, E.is_admin AS half_admin
+			, P.is_admin AS full_admin
+			, E.is_admin AS half_admin
 			FROM ".Player::PLAYER_TABLE." AS P
 				INNER JOIN ".self::EXTEND_TABLE." AS E
 					USING (player_id)
 			{$WHERE}
 			ORDER BY P.username
 		";
+		$query = "SELECT player_id, username FROM player WHERE 1 ORDER BY username";
 		$list = $Mysql->fetch_array($query);
 
 		return $list;

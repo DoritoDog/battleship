@@ -1,0 +1,48 @@
+.player {
+  color: whitesmoke;
+  font-size: 15px;
+
+  padding-bottom: 5px;
+  border-bottom: 1px solid white;
+  margin-bottom: 10px;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.player h3 {
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.player a {
+  margin-left: 30px;
+  color: darkgrey;
+  text-decoration: none;
+}
+
+.player input[type="submit"] {
+  margin-left: 30px;
+}
+
+.player a:hover {
+  text-decoration: underline;
+}
+
+.player span {
+  font-size: 18px;
+}
+
+.player-search {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.search-submit {
+  background: white;
+  color: black;
+  font-family: Arial;
+  border: none;
+  outline: none;
+  border-radius: 3px;
+}

@@ -282,6 +282,7 @@ class Player
 			// do nothing, it gets handled below
 		}
 
+		
 		// if we made it here, then there must have been something wrong
 		// even if there was no exception
 		$this->log_out(isset($_POST['password'])); // just to be sure
@@ -304,7 +305,7 @@ class Player
 		call(__METHOD__);
 
 		$this->is_logged = false;
-		$this->_delete_cookie( );
+		$this->_delete_cookie();
 
 		// clear player session data, but...
 		// keep the items that we need
@@ -399,6 +400,19 @@ class Player
 					Email::send('register', explode(',', Settings::read('to_email')), array_merge(array('id' => $this->id), $_DATA));
 				}
 
+				// Add the user to the other players table.
+				$insert_data = [
+					'player_id' => $this->id,
+					'is_admin' => 0,					// Change depending on actual value.
+					'allow_email' => 0,				// Change for production.
+					'pre_hide_board' => 1,
+					'max_games' => 100,
+					'color' => 'blue_white',
+					'wins' => 0,
+					'losses' => 0,
+				];
+				$this->_mysql->insert('bs2_bs_player', $insert_data);
+
 				return $this->_set_password($_POST['password']);
 			}
 		}
@@ -469,7 +483,7 @@ class Player
 		throw new MyException(__METHOD__.': Unable to update player');
 	}
 
-
+	
 	/** public function confirm
 	 *		Validates the players email address via email confirmation
 	 *
@@ -633,7 +647,6 @@ class Player
 	{
 		$data = array(
 			'password' => self::hash_password($password),
-			'alt_pass' => self::hash_alt_pass($password),
 		);
 		return $this->_mysql->insert(self::PLAYER_TABLE, $data, " WHERE player_id = '{$this->id}' ");
 	}
@@ -694,14 +707,15 @@ class Player
 
 				call($result);
 				call(self::hash_password($_POST['password']));
-				call(self::hash_alt_pass($_POST['password']));
 				call($is_approved);
 
 				if ( ! $is_approved) {
 					return false;
 				}
 
-				if ((0 == strcmp(self::hash_password($_POST['password']), $password))
+				// Old:
+				// (0 == strcmp(self::hash_password($_POST['password']), $password)
+				if (password_verify($_POST['password'], $password)
 					&& (0 == strcmp(self::hash_alt_pass($_POST['password']), $alt_pass)))
 				{
 					$this->id = (int) $id;
@@ -963,7 +977,8 @@ class Player
 	 */
 	static public function hash_password($password)
 	{
-		return md5($password.'NUTTY!SALT');
+		return password_hash($password, PASSWORD_DEFAULT);
+		//return md5($password.'NUTTY!SALT');
 	}
 
 

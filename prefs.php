@@ -18,11 +18,16 @@ if (isset($_POST['submit'])) {
 			$GLOBALS['Player']->color = $_POST['color'];
 		}
 
+		if (isset($_POST['skin'])) {
+			$GLOBALS['Player']->skin_id = $_POST['skin'];
+		}
+
 		$GLOBALS['Player']->save( );
 
 		Flash::store('Preferences Updated', false);
 	}
 	catch (MyException $e) {
+		var_dump($e);
 		Flash::store('Preferences Update FAILED !', false);
 	}
 }
@@ -50,6 +55,16 @@ else {
 	$color_select = '';
 }
 
+$skins_html = '<label for="skin">Skin</label>';
+$skins = Mysql::get_instance()->fetch_array("SELECT * FROM `themes`");
+$player_skin = $GLOBALS['Player']->skin_id;
+$skins_html .= '<select name="skin">';
+foreach ($skins as $skin) {
+	$selected_html = $GLOBALS['Player']->skin_id == $skin['id'] ? 'selected="selected"' : '';
+	$skins_html .= "<option " . $selected_html . " value=" . $skin['id'] . ">" . $skin['name'] . "</option>";
+}
+$skins_html .= '</select>';
+
 $contents = <<< EOF
 	<form method="post" action="{$_SERVER['REQUEST_URI']}"><div class="formdiv">
 		<input type="hidden" name="token" value="{$_SESSION['token']}" />
@@ -58,6 +73,7 @@ $contents = <<< EOF
 		<div><label for="pre_hide_board" class="inline">{$pre_hide_board_cb}Load the game board already hidden.</label></div>
 		<div><label for="max_games">Max concurrent games</label><input type="text" id="max_games" name="max_games" size="3" maxlength="3" value="{$GLOBALS['Player']->max_games}" /></div>
 		{$color_select}
+		<div>{$skins_html}</div>
 		<div><input type="submit" name="submit" value="Update Preferences" /></div>
 	</div></form>
 EOF;

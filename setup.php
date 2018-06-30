@@ -88,12 +88,11 @@ $contents .= '
 			<input type="button" class="button" id="random" value="Random Board" />
 			<input type="button" class="button" id="done" value="Done" />
 		</div></form>
-	</div>
-';
+	</div>';
 
-$contents .= '<div id="boat_wrapper">'.$Game->get_boats_html( )."</div>\n\n";
+$contents .= '<div id="boat_wrapper">'.$Game->get_boats_html()."</div>\n\n";
 
 echo get_header($meta);
 echo get_item($contents, $hints, $meta['title']);
-echo get_footer( );
+echo get_footer();
 

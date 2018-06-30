@@ -68,7 +68,9 @@ $contents = '
 				<p>Warning! Javascript must be enabled for proper operation of '.GAME_NAME.'.</p>
 			</noscript>
 
-			<form method="post" action="index.php'.$GLOBALS['_?_DEBUG_QUERY'].'"><div class="formdiv">
+			<!-- Changed the action below to redirect to #refresh -->
+
+			<form method="post" action="index.php#refresh'.$GLOBALS['_?_DEBUG_QUERY'].'"><div class="formdiv">
 				<div><label for="username">Username</label><input type="text" id="username" name="username" size="15" maxlength="20" tabindex="1" /></div>
 				<div><label for="password">Password</label><input type="password" id="password" name="password" class="inputbox" size="15" tabindex="2" /></div>
 				<div><label for="remember" class="inline"><input type="checkbox" id="remember" name="remember" checked="checked" tabindex="3" />Remember me</label></div>

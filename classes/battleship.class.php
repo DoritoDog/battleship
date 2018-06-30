@@ -190,6 +190,36 @@ class Battleship
 	}
 
 
+	/** Tests to see if the selected coordinate will result in a hit.
+	 * @return bool
+	 */
+	public function test_hit($coordinate) {
+		call(__METHOD__);
+
+		// get the item at the location
+		$site = $this->board[$coordinate];
+		// test the location for previous action
+		switch ($site) {
+			// if we alreay shot this target
+			case 'X' : // no break
+			case 'Y' :
+				throw new MyException(__METHOD__.': Already shot that target');
+				return false;
+				break;
+				
+			// if we missed
+			case '0' :
+				return false;
+				break;
+
+			// anything else must be a hit
+			default :
+				return true;
+				break;
+		}
+	}
+
+
 	/** public function do_shot
 	 *		Performs a shot and returns
 	 * 		true on hit, and false on miss
@@ -243,18 +273,19 @@ class Battleship
 	 * @action randomly fills the board
 	 * @return void
 	 */
-	public function random_board( )
+	public function random_board($is_russian = false)
 	{
 		call(__METHOD__);
 
 		// clear the board
-		$this->clear_board( );
+		$this->clear_board();
+		// 20 | 17
 
 		// go through the array of boat lengths
-		$sizes  = array(5, 4, 3, 3, 2);
+		$sizes  = $is_russian ? array(4, 3, 3, 2, 2, 2, 1, 1, 1, 1) : array(5, 4, 3, 3, 2);
 		foreach ($sizes as $key => $size) {
 			try {
-				$this->random_boat($size);
+				$this->random_boat($size, $is_russian);
 			}
 			catch (MyException $e) {
 				$code = $e->getCode( );
@@ -325,6 +356,30 @@ class Battleship
 		return $boats;
 	}
 
+	public function get_missing_boats_russian() {
+		call(__METHOD__);
+
+		$boats = array( );
+
+		if (0 == preg_match('/[abcd]/i', $this->board)) $boats['a'] = 4;
+
+		if (0 == preg_match('/[efg]/i', $this->board)) $boats['e'] = 3;
+		if (0 == preg_match('/[hij]/i', $this->board)) $boats['h'] = 3;
+
+		if (0 == preg_match('/[kl]/i',  $this->board)) $boats['k'] = 2;
+		if (0 == preg_match('/[mn]/i',  $this->board)) $boats['m'] = 2;
+		if (0 == preg_match('/[op]/i',  $this->board)) $boats['o'] = 2;
+
+		if (0 == preg_match('/[q]/i',  $this->board)) $boats['q'] = 1;
+		if (0 == preg_match('/[r]/i',  $this->board)) $boats['r'] = 1;
+		if (0 == preg_match('/[s]/i',  $this->board)) $boats['s'] = 1;
+		if (0 == preg_match('/[t]/i',  $this->board)) $boats['t'] = 1;
+
+		call($boats);
+
+		return $boats;
+	}
+
 
 	/** public function get_salvo_shots
 	 *		Returns the number of shots available
@@ -348,7 +403,7 @@ class Battleship
 	 * @action places the boat
 	 * @return bool success
 	 */
-	public function boat_between($value1, $value2)
+	public function boat_between($value1, $value2, $is_ruski = false)
 	{
 		call(__METHOD__);
 
@@ -388,19 +443,35 @@ class Battleship
 		// must use round here, because we run into rounding errors if we just typecast to int
 		$size = round((abs($value1 - $value2) * (1 - (0.9 * $orient))) + 1);
 
-		// make sure we need this size
-		$boats = $this->get_missing_boats( );
+		if (!$is_ruski) {
+			// make sure we need this size
+			$boats = $this->get_missing_boats();
 
-		if ( ! in_array($size, $boats)) {
-			throw new MyException(__METHOD__.': That boat is not available (already placed, or wrong size) ('.$size.')');
-			return false;
+			if ( ! in_array($size, $boats)) {
+				$errorMsg = ': That boat is not available (already placed, or wrong size) ('.$size.')';
+				throw new MyException(__METHOD__ . $errorMsg);
+				return false;
+			}
 		}
 
 		// find the front of the boat
 		$bow = ($value1 < $value2) ? $value1 : $value2;
 
 		// place the boat
-		return $this->_place_boat($bow, $size, $orient);
+		if ($is_ruski)
+			return $this->_place_boat_russian($bow, $size, $orient);
+		else
+			return $this->_place_boat($bow, $size, $orient);
+	}
+
+
+	/** Used during ruski setup after all the longer boats have been placed. */
+	public function single_boat($coordinates) {
+		try {
+			$this->_place_boat_russian($coordinates, 1, 0);
+		} catch(Exception $e) {
+			var_dump($e);
+		}
 	}
 
 
@@ -411,7 +482,7 @@ class Battleship
 	 * @action randomly fills the board
 	 * @return void
 	 */
-	public function random_boat($size)
+	public function random_boat($size, $is_russian = false)
 	{
 		call(__METHOD__);
 		call($size);
@@ -419,7 +490,7 @@ class Battleship
 		// find out which boats are not yet on the board
 		$boats = $this->get_missing_boats( );
 
-		if ( ! in_array($size, $boats)) {
+		if (!$is_russian && !in_array($size, $boats)) {
 			throw new MyException(__METHOD__.': That boat is already on the board');
 		}
 
@@ -434,7 +505,11 @@ class Battleship
 
 			// see if we can place a boat there (do it if we can)
 			try {
-				$this->_place_boat($bow, $size, $orient);
+				if ($is_russian)
+					$this->_place_boat_russian($bow, $size, $orient);
+				else
+					$this->_place_boat($bow, $size, $orient);
+
 				$placed = true;
 			}
 			catch (MyException $e) {
@@ -459,7 +534,7 @@ class Battleship
 	 * @action removes the boat
 	 * @return bool success
 	 */
-	public function remove_boat($square)
+	public function remove_boat($square, $is_russian = false)
 	{
 		call(__METHOD__);
 
@@ -479,44 +554,102 @@ class Battleship
 			return false;
 		}
 
-		// get the boat pattern based on the value of the square
-		switch (strtolower($item)) {
-			case 'a' : // no break
-			case 'b' : // no break
-			case 'c' : // no break
-			case 'd' : // no break
-			case 'e' :
-				$pattern = '/[a-e]/i';
-				break;
+		if ($is_russian) {
+			// get the boat pattern based on the value of the square
+			switch (strtolower($item)) {
+				case 'a' : // no break
+				case 'b' : // no break
+				case 'c' : // no break
+				case 'd' : // no break
+					$pattern = '/[a-d]/i';
+					break;
 
-			case 'f' : // no break
-			case 'g' : // no break
-			case 'h' : // no break
-			case 'i' :
-				$pattern = '/[f-i]/i';
-				break;
+				case 'e' : // no break
+				case 'f' : // no break
+				case 'g' : // no break
+					$pattern = '/[efg]/i';
+					break;
 
-			case 'j' : // no break
-			case 'k' : // no break
-			case 'l' :
-				$pattern = '/[jkl]/i';
-				break;
+				case 'h' : // no break
+				case 'i' : // no break
+				case 'j' :
+					$pattern = '/[hij]/i';
+					break;
 
-			case 'm' : // no break
-			case 'n' : // no break
-			case 'o' :
-				$pattern = '/[mno]/i';
-				break;
+				case 'k':
+				case 'l':
+					$pattern = '/[kl]/i';
+					break;
 
-			case 'p' : // no break
-			case 'q' :
-				$pattern = '/[pq]/i';
-				break;
+				case 'm':
+				case 'n':
+					$pattern = '/[mn]/i';
+					break;
 
-			default  :
-				throw new MyException(__METHOD__.': Unknown item found');
-				return false;
-				break;
+				case 'o':
+				case 'p':
+					$pattern = '/[op]/i';
+					break;
+
+				case 'q' : // no break
+					$pattern = '/[q]/i';
+					break;
+				case 'r':
+						$pattern = '/[r]/i';
+						break;
+				case 's':
+						$pattern = '/[s]/i';
+						break;
+				case 't':
+						$pattern = '/[t]/i';
+						break;
+
+				default  :
+					throw new MyException(__METHOD__.': Unknown item found');
+					return false;
+					break;
+			}
+		}
+		else {
+			// get the boat pattern based on the value of the square
+			switch (strtolower($item)) {
+				case 'a' : // no break
+				case 'b' : // no break
+				case 'c' : // no break
+				case 'd' : // no break
+				case 'e' :
+					$pattern = '/[a-e]/i';
+					break;
+
+				case 'f' : // no break
+				case 'g' : // no break
+				case 'h' : // no break
+				case 'i' :
+					$pattern = '/[f-i]/i';
+					break;
+
+				case 'j' : // no break
+				case 'k' : // no break
+				case 'l' :
+					$pattern = '/[jkl]/i';
+					break;
+
+				case 'm' : // no break
+				case 'n' : // no break
+				case 'o' :
+					$pattern = '/[mno]/i';
+					break;
+
+				case 'p' : // no break
+				case 'q' :
+					$pattern = '/[pq]/i';
+					break;
+
+				default  :
+					throw new MyException(__METHOD__.': Unknown item found');
+					return false;
+					break;
+			}
 		}
 
 		// remove the boat
@@ -598,7 +731,7 @@ class Battleship
 		// so we don't bork things later if it fails
 		$board = $this->board;
 
-		$boats = $this->get_missing_boats( );
+		$boats = $this->get_missing_boats();
 		$bows = array_flip($boats);
 
 		if (empty($bows[$size])) {
@@ -610,9 +743,77 @@ class Battleship
 		$bow_test = ((bool) $orient) ? floor($bow * 0.1) : ($bow % 10);
 
 		if ((0 > $bow) || (10 >= ($bow_test + $size))) {
+			//echo $size . '<br>';
 			for ($i = 0; $i < $size; ++$i) {
 				// set the current index based on our orientation
 				$cur_index = ($orient) ? ($bow + ($i * 10)) : ($bow + $i);
+				// echo $size . ' ' . $cur_index . "<br>";
+
+				// if we found a boat in the way
+				if ('0' != $board[$cur_index]) {
+					throw new MyException(__METHOD__.': There is another boat in the way', 102);
+				}
+
+				// it's a temp board, so just start placing the boat
+				// even if we haven't tested all locations
+				// if it throws an exception, no harm done
+				$board[$cur_index] = ($orient) ? strtoupper($bow_value) : strtolower($bow_value);
+				++$bow_value; // alpha characters increment as well
+			}
+			call($board);
+
+			// save the local copy
+			$this->board = $board;
+		}
+		else {
+			throw new MyException(__METHOD__.': The boat does not fit in that location', 101);
+		}
+	}
+
+	protected function _does_assoc_array_contain($array, $value) {
+		foreach ($array as $key => $val) {
+			if ($val == $value)
+				return true;
+		}
+
+		return false;
+	}
+
+	protected function _get_first_assoc_key($array, $value) {
+		foreach ($array as $key => $val) {
+			if ($val == $value)
+				return $key;
+		}
+
+		return null;
+	}
+
+	protected function _place_boat_russian($bow, $size, $orient)
+	{
+		call(__METHOD__);
+		call($bow);
+		call($size);
+		call($orient);
+
+		// get a local copy of the board
+		// so we don't bork things later if it fails
+		$board = $this->board;
+
+		$boats = $this->get_missing_boats_russian();
+		
+		//  Check if the size is available to be placed.
+		if (!$this->_does_assoc_array_contain($boats, $size))
+			throw new MyException(__METHOD__.': This boat is not available to place', 103);
+
+		$bow_value = $this->_get_first_assoc_key($boats, $size);
+		$bow_test = ((bool) $orient) ? floor($bow * 0.1) : ($bow % 10);
+		
+		if ((0 > $bow) || (10 >= ($bow_test + $size))) {
+			//echo $size . '<br>';
+			for ($i = 0; $i < $size; ++$i) {
+				// set the current index based on our orientation
+				$cur_index = ($orient) ? ($bow + ($i * 10)) : ($bow + $i);
+				// echo $size . ' ' . $cur_index . "<br>";
 
 				// if we found a boat in the way
 				if ('0' != $board[$cur_index]) {

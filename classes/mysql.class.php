@@ -57,9 +57,9 @@ class Mysql
 	protected $_log_path = './';    // Path to the MySQL error log file
 
 	protected $_email_errors = false; // send an email when an error is encountered
-	protected $_email_subject = 'Query Error'; // the email subject for the email message
-	protected $_email_from = 'example@example.com'; // the email address to send error reports from
-	protected $_email_to = 'example@example.com'; // the email address to send error reports to
+	protected $_email_subject = '';// 'Query Error'; // the email subject for the email message
+	protected $_email_from = '';// 'example@example.com'; // the email address to send error reports from
+	protected $_email_to = '';// 'example@example.com'; // the email address to send error reports to
 
 	static private $_instance; // Instance of the MySQL Object
 
@@ -956,7 +956,7 @@ class Mysql
 		$error_report .= "\t* Backtrace: ".print_r($debug_array, true)."\n\n";
 
 		// send the error as email if set
-		if ($this->_email_errors && ('' != $this->_email_to) && ('' != $this->_email_from)) {
+		if ($this->_email_errors && (!empty($this->_email_to) && !empty($this->_email_from)) && false) {
 			mail($this->_email_to, trim($this->_email_subject), $error_report, 'From: '.$this->_email_from."\r\n");
 		}
 

@@ -159,6 +159,9 @@ class Game
 	 */
 	protected $_mysql;
 
+	/* The last player to have made a move */
+	public $_last_player;
+
 
 
 	/**
@@ -365,7 +368,8 @@ class Game
 		}
 
 		$_DATA['state'] = 'Waiting';
-		$_DATA['create_date '] = 'NOW( )'; // note the trailing space in the field name, this is not a typo
+		$_DATA['create_date '] = 'NOW()'; // note the trailing space in the field name, this is not a typo
+		$_DATA['modify_date '] = 'NOW()';
 
 
 		// THIS IS THE ONLY PLACE IN THE CLASS WHERE IT BREAKS THE _pull / save MENTALITY
@@ -460,6 +464,11 @@ class Game
 		return ((isset($this->_players['player']['color'])) ? $this->_players['player']['color'] : false);
 	}
 
+	public function _get_players()
+	{
+			return $this->_players;
+	}
+
 
 	/** public function get_my_turn
 	 *		Returns the current player's turn
@@ -470,6 +479,14 @@ class Game
 	public function get_my_turn( )
 	{
 		return ((isset($this->_players['player']['turn'])) ? $this->_players['player']['turn'] : false);
+	}
+
+
+	/** Calls the same method on the battleship class.
+	 * @return bool
+	 */
+	public function test_hit($coordinate) {
+		return $this->_boards['player']->test_hit($coordinate);
 	}
 
 
@@ -493,10 +510,18 @@ class Game
 					break;
 				}
 
-				$this->_boards['opponent']->do_shot($target);
+				// If we hit a single mode shot, $change_turns is false - DON'T change turns.
+				$change_turns = !($this->_boards['opponent']->do_shot($target) && $this->method === 'Single');
+				if (!$change_turns) {
+					$query = "UPDATE `bs2_game` SET `change_turns` = 0 WHERE `game_id` = $this->id";
+					$this->_mysql->query($query);
+			}
 			}
 
-			$this->_test_winner( );
+			$query = "UPDATE `bs2_game` SET `last_player` = '$this->turn' WHERE `game_id` = $this->id";
+			$this->_mysql->query($query);
+
+			$this->_test_winner();
 		}
 		catch (MyException $e) {
 			throw $e;
@@ -670,6 +695,11 @@ class Game
 		return $players;
 	}
 
+	public function get_history() {
+		$board = $this->_history[4]['white_board'];
+		return $this->_boards['player']->get_board_ascii($board);
+	}
+
 
 	/** public function get_board_html
 	 *		Creates the board html based on the type
@@ -703,7 +733,11 @@ class Game
 			// grab the most recent board
 			$board = $this->_history[0][$color.'_board'];
 			if (is_null($board)) {
-				$board = $this->_history[1][$color.'_board'];
+				$index = 1;
+				while (is_null($this->_history[$index][$color.'_board'])) {
+					$index++;
+			}
+				$board = $this->_history[$index][$color.'_board'];
 			}
 			call($board);
 			call($this->_boards['player']->get_board_ascii($board));
@@ -741,6 +775,59 @@ class Game
 				default  : $img = '&nbsp;'; break;
 			}
 
+			if (strtolower($this->method) === 'russian') {
+				if ( ! $theirs) {
+					switch (strtolower($orig_board[$i])) {
+						case 'a':
+						case 'e':
+						case 'h':
+						case 'k':
+						case 'm':
+						case 'o':
+						case 'q':
+						case 'r':
+						case 's':
+						case 't':
+							$class = ' class="h-bow"';
+							break;
+	
+						case 'b':
+							$class = ' class="h-fore"';
+							break;
+	
+						case 'f' :
+						case 'i' :
+							$class = ' class="h-mid"';
+							break;
+						
+						case 'c':
+							$class = ' class="h-aft"';
+							break;
+	
+						case 'd':
+						case 'g':
+						case 'j':
+						case 'l':
+						case 'n':
+						case 'p':
+							$class = ' class="h-stern"';
+							break;
+	
+						default :
+							$class = '';
+							break;
+					} // end switch
+	
+					// if it's vertical, switch the class
+					if (strtolower($orig_board[$i]) != $orig_board[$i]) {
+						$class = str_replace('h', 'v', $class);
+					}
+				}
+				else { // theirs (don't show the boats)
+					$class = '';
+				}
+			}
+			else {
 			if ( ! $theirs) {
 				switch (strtolower($orig_board[$i])) {
 					case 'a' : // no break
@@ -788,6 +875,7 @@ class Game
 			else { // theirs (don't show the boats)
 				$class = '';
 			}
+			}
 
 			// put in the div
 			$html .= "<div{$tgt_id}{$class}>{$img}</div>";
@@ -813,7 +901,9 @@ class Game
 	public function get_missing_boats($mine = true)
 	{
 		if ($mine) {
-			return $this->_boards['player']->get_missing_boats( );
+			return $this->method === 'Russian' ?
+				$this->_boards['player']->get_missing_boats_russian() :
+				$this->_boards['player']->get_missing_boats();
 		}
 		else {
 			return $this->_boards['opponent']->get_missing_boats( );
@@ -854,6 +944,70 @@ class Game
 		foreach($diff as $shot) {
 			$hit = $prev_board[$shot];
 
+			if ($this->method == 'Russian') {
+				switch (strtolower($hit)) {
+					case 'a':
+					case 'b':
+					case 'c':
+					case 'd':
+						$pattern = '/[a-d]/i';
+						$ship = 'Carrier';
+						break;
+
+					case 'e':
+					case 'f': 
+					case 'g':
+						$pattern = '/[efg]/i';
+						$ship = 'Battleship 1';
+						break;
+					
+					case 'h':
+					case 'i':
+					case 'j':
+						$pattern = '/[hij]/i';
+						$ship = 'Battleship 2';
+						break;
+
+					case 'k':
+					case 'l':
+						$pattern = '/[kl]/i';
+						$ship = 'Cruiser 1';
+						break;
+					
+					case 'm':
+					case 'n':
+						$pattern = '/[mn]/i';
+						$ship = 'Cruiser 2';
+						break;
+
+					case 'o':
+					case 'p':
+						$pattern = '/[op]/i';
+						$ship = 'Cruiser 3';
+						break;
+
+					case 'q':
+					$pattern = '/[q]/i';
+					$ship = 'Smallest 1';
+					break;
+
+					case 'r':
+					$pattern = '/[r]/i';
+					$ship = 'Smallest 2';
+					break;
+
+					case 's':
+					$pattern = '/[s]/i';
+					$ship = 'Smallest 3';
+					break;
+
+					case 't':
+					$pattern = '/[t]/i';
+					$ship = 'Smallest 4';
+					break;
+				}
+			}
+			else {
 			// if we can find the boat before the shot
 			if ('0' != $hit) {
 				switch (strtolower($hit)) {
@@ -894,6 +1048,7 @@ class Game
 						$ship = 'Destroyer';
 						break;
 				}
+			}
 
 				// if we can't find it now
 				if (0 == preg_match($pattern, $this_board)) {
@@ -943,6 +1098,10 @@ class Game
 	public function get_shot_count( )
 	{
 		switch (strtolower($this->method)) {
+			case 'russian':
+				$shots = 5;
+				break;
+
 			case 'five' :
 				$shots = 5;
 				break;
@@ -952,8 +1111,11 @@ class Game
 				break;
 
 			case 'single' :
-			default :
 				$shots = 1;
+				break;
+				
+			default :
+				$shots = 5;
 				break;
 		}
 
@@ -967,7 +1129,7 @@ class Game
 	 * @param array optional of ints boat sizes available
 	 * @return string boat html
 	 */
-	public function get_boats_html($boats = -1)
+	public function get_boats_html($boats = -1, $is_russian = false)
 	{
 		call(__METHOD__);
 
@@ -977,6 +1139,7 @@ class Game
 
 		$html = '<div class="boats">';
 
+	
 		foreach ($boats as $boat) 	{
 			$html .= '<div class="boat">';
 
@@ -995,6 +1158,9 @@ class Game
 
 				case 2 :
 					$html .= '<div class="h-bow">&nbsp;</div><div class="h-stern">&nbsp;</div>';
+					break;
+				case 1 :
+					$html .= '<div class="h-bow">&nbsp;</div>';
 					break;
 			}
 
@@ -1019,8 +1185,17 @@ class Game
 		call(__METHOD__);
 
 		try {
-			$args = func_get_args( );
+			$is_russian_action = ($action === 'random_board' || $action === 'boat_between' ||
+														$action === 'random_boat' || $action === 'remove_boat');
+			if ($this->method === 'Russian' && $is_russian_action) {
+				$args = func_get_args();
+				$args[] = 'true';
+				call_user_func_array(array($this->_boards['player'], $action), array_slice($args, 1));
+			}
+			else {
+				$args = func_get_args();
 			call_user_func_array(array($this->_boards['player'], $action), array_slice($args, 1));
+			}
 
 			// if they changed anything, set them as not ready
 			$this->_players['player']['ready'] = false;
@@ -1142,6 +1317,7 @@ class Game
 		$this->paused = (bool) $result['paused'];
 		$this->create_date = strtotime($result['create_date']);
 		$this->modify_date = strtotime($result['modify_date']);
+		$this->_last_player = $result['last_player'];
 
 		// set up the players
 		$this->_players['white']['player_id'] = $result['white_id'];
@@ -1190,17 +1366,39 @@ class Game
 			$this->last_move = strtotime($result[0]['move_date']);
 
 			try {
-				$this->_boards['white'] = new Battleship( );
+				$this->_boards['white'] = new Battleship();
 				$this->_boards['black'] = new Battleship($result[0]['black_board']);
 
+			  // $db_res = $this->_mysql->fetch_assoc("SELECT change_turns FROM bs2_game WHERE game_id = $this->id");
+				// $change_turns =  (int) $db_res['change_turns'];
+
+				// if (!$change_turns) {
+				// 	$this->turn = $this->_last_player;
+
+				// 	// Solution: keep going back until you find a non null white board.
+				// 	$index = 0;
+				// 	while (is_null($result[$index]['white_board'])) {
+				// 		$index++;
+				// 	}
+
+				// 	$this->_boards['white']->board = $result[$index]['white_board'];
+
+				// 	// It will be set back if necessary.
+				// 	$this->_mysql->query("UPDATE `bs2_game` SET `change_turns` = 1 WHERE `game_id` = $this->id;");
+				// }
+
+				$this->turn = 'black';
 				// we may have to backtrack a bit to grab the white board
-				if ( ! is_null($result[0]['white_board'])) {
+				if (!is_null($result[0]['white_board'])) {
 					$this->_boards['white']->board = $result[0]['white_board'];
 					$this->turn = 'white';
 				}
-				elseif ( ! empty($result[1]['white_board'])) {
+				elseif (!empty($result[1]['white_board'])) {
 					$this->_boards['white']->board = $result[1]['white_board'];
 					$this->turn = 'black';
+					// $this->turn = $change_turns ? 'black' : 'white';
+					// $index = $change_turns ? 1 : 0;
+					// $this->_boards['white']->board = $result[$index]['white_board'];
 				}
 			}
 			catch (MyException $e) {
@@ -1227,14 +1425,14 @@ class Game
 	}
 
 
-	/** protected function save
+	/**
 	 *		Saves all changed data to the database
 	 *
 	 * @param void
 	 * @action saves the game data
 	 * @return void
 	 */
-	protected function save( )
+	protected function save()
 	{
 		call(__METHOD__);
 
@@ -1394,7 +1592,7 @@ class Game
 	 * @action saves the game
 	 * @return void
 	 */
-	protected function _test_winner( )
+	protected function _test_winner()
 	{
 		call(__METHOD__);
 
@@ -1416,7 +1614,7 @@ class Game
 			Email::send('turn', $this->_players['opponent']['object']->id, array('opponent' => $this->_players['player']['object']->username, 'game_id' => $this->id));
 		}
 
-		$this->save( );
+		$this->save();
 	}
 
 

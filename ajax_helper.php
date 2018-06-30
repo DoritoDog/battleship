@@ -120,6 +120,29 @@ if (isset($_POST['refresh'])) {
 	exit;
 }
 
+// Used by game.js to detect when the opponent has fired.
+// Returns all rows from the shots table.
+if (isset($_POST['get_shots'])) {
+	$mysql = Mysql::get_instance();
+
+	$game_id = $_SESSION['game_id'];
+	$response = $mysql->fetch_assoc("SELECT * FROM shots
+																	 WHERE id = ( SELECT MAX(id) FROM shots )
+																	 AND game_id = $game_id
+																	 LIMIT 1;");
+
+	/*if (count($response) > 0) {
+		// Delete all shots of this game in case there is more than one.
+		$mysql->delete("shots", "WHERE shots.game_id = $game_id");
+	}*/
+
+	// Fill in the hit.
+	$response['hit'] = $Game->test_hit($response['coordinate']);
+
+	echo json_encode($response);
+	exit;
+}
+
 
 // run the ship count clicks
 if (isset($_POST['shipcheck'])) {
@@ -171,6 +194,10 @@ if (isset($_POST['method'])) {
 					$Game->setup_action('boat_between', $value1, $value2);
 					break;
 
+				case 'single_boat':
+					$Game->setup_action('single_boat', $_POST['value']);
+					break;
+
 				case 'random_boat' :
 					$Game->setup_action('random_boat', $_POST['value']);
 					break;
@@ -181,7 +208,9 @@ if (isset($_POST['method'])) {
 			} // end method switch
 
 			$return['board'] = $Game->get_board_html('first', true);
-			$return['boats'] = $Game->get_boats_html( );
+			$return['boats'] =  $Game->get_boats_html();
+			$return['missingBoats'] = $Game->get_missing_boats(true);
+			$return['method'] = $Game->method;
 		}
 	}
 	catch (MyException $e) {
@@ -235,6 +264,20 @@ if (isset($_POST['resign'])) {
 	exit;
 }
 
+function post($url, $data) {
+	// use key 'http' even if you send the request to https://...
+	$options = array(
+		'http' => array(
+			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+			'method'  => 'POST',
+			'content' => http_build_query($data),
+		),
+	);
+
+	$context  = stream_context_create($options);
+	$result = file_get_contents($url, false, $context);
+	return $result;
+}
 
 // run the shots
 if (isset($_POST['shots'])) {
@@ -244,6 +287,7 @@ if (isset($_POST['shots'])) {
 	// clean up the shots
 	$_POST['shots'] = explode(',', trim($_POST['shots'], ', '));
 
+	$args = array();
 	try {
 		$Game->do_shots($_POST['shots']);
 		$return['action'] = 'RELOAD';
