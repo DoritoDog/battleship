@@ -345,7 +345,7 @@ class Game
 	 * @action creates a game
 	 * @return int game id
 	 */
-	public function invite( )
+	public function invite($opponent_id = null)
 	{
 		call(__METHOD__);
 
@@ -355,7 +355,7 @@ class Game
 
 		// translate (filter/sanitize) the data
 		$_P['white_id'] = $_P['player_id'];
-		$_P['black_id'] = $_P['opponent'];
+		$_P['black_id'] = is_null($opponent_id) ? $_P['opponent'] : $opponent_id;
 		$_P['method'] = $_P['method'];
 		$_P['fleet_type'] = $_P['fleet_type'];
 

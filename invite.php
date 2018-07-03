@@ -9,7 +9,7 @@ GamePlayer::delete_inactive(Settings::read('expire_users'));
 Game::delete_inactive(Settings::read('expire_games'));
 Game::delete_finished(Settings::read('expire_finished_games'));
 
-$Game = new Game( );
+$Game = new Game();
 
 if (isset($_POST['invite'])) {
 	// make sure this user is not full
@@ -17,10 +17,10 @@ if (isset($_POST['invite'])) {
 		Flash::store('You have reached your maximum allowed games !', false);
 	}
 
-	test_token( );
+	test_token();
 
 	try {
-		$game_id = $Game->invite( );
+		$game_id = $Game->invite();
 		Flash::store('Invitation Sent Successfully', 'setup.php?id='.$game_id.$GLOBALS['_&_DEBUG_QUERY']);
 	}
 	catch (MyException $e) {
@@ -28,8 +28,36 @@ if (isset($_POST['invite'])) {
 	}
 }
 
+if (isset($_POST['find_game'])) {
+	$mysql = Mysql::get_instance();
+	$insert_data = [
+		'player_id' => $_SESSION['player_id'],
+		'method' => $_POST['method'],
+		'fleet_type' => $_POST['fleet_type'],
+	];
+	
+	$game = $mysql->fetch_assoc("SELECT * FROM `pending_game_searches`
+															 WHERE `method` = '{$insert_data['method']}' AND
+															 `fleet_type` = '{$insert_data['fleet_type']}'");
+	var_dump($game);
+	if (empty($game)) {
+		$mysql->insert('pending_game_searches', $insert_data);
+	}
+	else if (!empty($game) && $game['player_id'] != $_SESSION['player_id']) {
+		try {
+			$game_id = $Game->invite($game['player_id']);
+			Flash::store('Invitation Sent Successfully', 'setup.php?id='.$game_id.$GLOBALS['_&_DEBUG_QUERY']);
+		}
+		catch (MyException $e) {
+			Flash::store('Invitation FAILED !', false);
+		}
+
+		$mysql->query("DELETE FROM `pending_game_searches` WHERE `id` = $game->id");
+	}
+}
+
 // grab the full list of players
-$players_full = GamePlayer::get_list(true);
+$players_full = GamePlayer::get_friends($_SESSION['player_id']);
 $invite_players = array_shrink($players_full, 'player_id');
 
 // grab the players who's max game count has been reached
@@ -69,7 +97,7 @@ foreach ($fleet_types as $fleet) {
 }
 
 
-$meta['title'] = 'Send Game Invitation';
+$meta['title'] = '';
 $meta['foot_data'] = '
 	<script type="text/javascript" src="scripts/invite.js"></script>
 ';
@@ -92,7 +120,12 @@ if ($GLOBALS['Player']->max_games && ($GLOBALS['Player']->max_games <= $GLOBALS[
 	$submit_button = $warning = '<p class="warning">You have reached your maximum allowed games, you can not create this game !</p>';
 }
 
+
 $contents = <<< EOF
+<div class="col-container">
+	<div class="half-col">
+	<h2>Invite a Friend to Play</h2>
+
 	<form method="post" action="{$_SERVER['REQUEST_URI']}" id="send"><div class="formdiv">
 
 		<input type="hidden" name="token" value="{$_SESSION['token']}" />
@@ -162,9 +195,29 @@ $table_format = array(
 );
 $contents .= get_table($table_format, $out_vites, $table_meta);
 
+$left_content = '
+<h2>Find me an opponent</h2>
+<form method="post" action="">
+	<div><label for="method">Method</label><select id="method" name="method">'.$method_selection.'</select></div>
+		<div>
+			<label for="fleet_type">Fleet Type</label>
+			<select id="fleet_type" name="fleet_type">'.$fleet_selection.'</select>
+		</div>
+	<input type="hidden" name="player_id" value="'.$_SESSION['player_id'].'">
+	<input type="submit" name="find_game" value="Search">
+</form>
+';
+
 $contents .= <<< EOT
 	</div></form>
+
+	</div>
+	<div class="half-col">
+		{$left_content}
+	</div>
+</div>
 EOT;
+
 
 echo get_header($meta);
 echo get_item($contents, $hints, $meta['title']);

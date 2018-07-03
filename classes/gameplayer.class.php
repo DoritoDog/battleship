@@ -478,6 +478,13 @@ class GamePlayer
 		return $list;
 	}
 
+	static public function get_friends($player_id) {
+		$mysql = Mysql::get_instance();
+		return $mysql->fetch_array("SELECT * FROM `friends`
+																INNER JOIN `player` ON friends.friend_id = player.player_id
+																AND player.player_id != $player_id");
+	}
+
 
 	/** static public function get_count
 	 *		Returns a count of all game players

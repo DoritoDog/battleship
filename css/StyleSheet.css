@@ -46,3 +46,8 @@
   outline: none;
   border-radius: 3px;
 }
+
+.half-col {
+  float: left;
+  width: 50%;
+}
