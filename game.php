@@ -153,6 +153,8 @@ $total_boats = $Game->fleet_type == 'Russian' ? 10 : 5;
 $player_boats = $total_boats - count($Game->get_missing_boats($mine = true));
 $opponent_boats = $total_boats - count($Game->get_missing_boats($mine = false));
 
+$hide_board = $Game->get_my_color() == 'white' ? $Game->hide_white : $Game->hide_black;
+
 $meta['title'] = $turn.' - '.$Game->name.' (#'.$_SESSION['game_id'].')';
 $meta['show_menu'] = false;
 $meta['head_data'] = '
@@ -169,6 +171,7 @@ $meta['head_data'] = '
 		var my_turn = '.(( ! $Game->get_my_turn( ) || $no_turn) ? 'false' : 'true').';
 		var pre_hide_board = '.(($GLOBALS['Player']->pre_hide_board) ? 'true' : 'false').';
 		var gameMode = "' . $Game->method . '";
+		var hideBoard = "' . ($hide_board ? true : false) . '";
 	/*]]>*/</script>
 ';
 

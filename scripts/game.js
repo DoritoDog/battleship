@@ -23,6 +23,8 @@ $('div.active').on('click', 'div.first', function( ) {
 		board_storage = $this;
 		$this.replaceWith('<div class="noboard first panic" style="cursor:pointer;" title="Click to show board">HIDDEN</div>');
 	}
+
+	$.post('ajax_helper.php', { hide_board: !hideBoard }, (data, status) => {});
 }).find('div.first').css('cursor', 'pointer').attr('title', 'Click to hide board');
 
 // set the previous shots
@@ -284,7 +286,7 @@ if ( ! my_turn && ('finished' != state)) {
 
 update_shots( );
 
-if (pre_hide_board) {
+if (/*pre_hide_board*/ hideBoard) {
 	$('div.active div.first').click();
 }
 

@@ -133,6 +133,9 @@ class Game
 	 */
 	public $last_move;
 
+	public $hide_white;
+	public $hide_black;
+
 
 	/** protected property _players
 	 *		Holds our player's object references
@@ -165,9 +168,6 @@ class Game
 	 * @param Mysql object
 	 */
 	protected $_mysql;
-
-	/* The last player to have made a move */
-	public $_last_player;
 
 
 
@@ -524,16 +524,8 @@ class Game
 					break;
 				}
 
-				// If we hit a single mode shot, $change_turns is false - DON'T change turns.
-				$change_turns = !($this->_boards['opponent']->do_shot($target) && $this->method === 'Single');
-				if (!$change_turns) {
-					$query = "UPDATE `bs2_game` SET `change_turns` = 0 WHERE `game_id` = $this->id";
-					$this->_mysql->query($query);
+				$this->_boards['opponent']->do_shot($target);
 			}
-			}
-
-			$query = "UPDATE `bs2_game` SET `last_player` = '$this->turn' WHERE `game_id` = $this->id";
-			$this->_mysql->query($query);
 
 			$this->_test_winner();
 		}
@@ -798,10 +790,6 @@ class Game
 						case 'k':
 						case 'm':
 						case 'o':
-						case 'q':
-						case 'r':
-						case 's':
-						case 't':
 							$class = ' class="h-bow"';
 							break;
 	
@@ -825,6 +813,13 @@ class Game
 						case 'n':
 						case 'p':
 							$class = ' class="h-stern"';
+							break;
+						
+						case 'q':
+						case 'r':
+						case 's':
+						case 't':
+							$class = ' class="h-single"';
 							break;
 	
 						default :
@@ -1175,7 +1170,7 @@ class Game
 					$html .= '<div class="h-bow">&nbsp;</div><div class="h-stern">&nbsp;</div>';
 					break;
 				case 1 :
-					$html .= '<div class="h-bow">&nbsp;</div>';
+					$html .= '<div class="h-single">&nbsp;</div>';
 					break;
 			}
 
@@ -1333,7 +1328,8 @@ class Game
 		$this->paused = (bool) $result['paused'];
 		$this->create_date = strtotime($result['create_date']);
 		$this->modify_date = strtotime($result['modify_date']);
-		$this->_last_player = $result['last_player'];
+		$this->hide_white = $result['hide_white'];
+		$this->hide_black = $result['hide_black'];
 
 		// set up the players
 		$this->_players['white']['player_id'] = $result['white_id'];

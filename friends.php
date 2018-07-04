@@ -98,25 +98,26 @@ if (isset($_POST['player-search'])) {
   $contents .= '</div>';
 }
 else {
-  $contents .= '<div class="players-container">';
+  $contents .= '<table class="friends-table"><div class="players-container">';
   
   $query = "SELECT player.player_id, player.username FROM `friends`
             INNER JOIN `player` ON friends.friend_id = player.player_id
             AND player.player_id != $player_id";
   $friends = $mysql->fetch_array($query);
+
   foreach ($friends as $friend) {
-    $contents .= '<div class="player">
-                    <h3>' . $friend['username'] . '</h3>
-                    <a href="send.php"><span class="fa fa-comments"></span> Send Message</a>
-                    <a href="invite.php"><span class="fa fa-ship"></span> Challenge</a>
+    $contents .= '<tr>
+                    <th><h3>' . $friend['username'] . '</h3></th>
+                    <th><a href="send.php"><span class="fa fa-comments"></span> Send Message</a></th>
+                    <th><a href="invite.php"><span class="fa fa-ship"></span> Challenge</a></th>
                     <form method="post" action="">
                       <input type="hidden" name="unfriend" value="' . $friend['player_id'] . '" />
-                      <input type="submit" value="Unfriend" />
+                      <th><input type="submit" value="Unfriend" /></th>
                     </form>
-                  </div>';
+                  </tr>';
   }
 
-  $contents .= '</div>';
+  $contents .= '</div></table>';
 }
 
 echo get_header($meta);

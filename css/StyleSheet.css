@@ -51,3 +51,7 @@
   float: left;
   width: 50%;
 }
+
+.friends-table th {
+  color: darkgrey;
+}

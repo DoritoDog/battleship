@@ -98,7 +98,13 @@ $(document).ready( function( ) {
 					}
 
 					if (reply.redirect) {
-						window.location = ((-1 !== reply.redirect.indexOf('?')) ? reply.redirect+debug_query : reply.redirect+debug_query_);
+						if (-1 !== reply.redirect.indexOf('?')) {
+							window.loaction = reply.redirect+debug_query;
+						}
+						else {
+							window.location = rootUrl + reply.redirect;
+							return;
+						}
 					}
 
 					if (reload) { window.location.reload( ); }

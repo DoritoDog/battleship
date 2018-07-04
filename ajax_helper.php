@@ -143,6 +143,12 @@ if (isset($_POST['get_shots'])) {
 	exit;
 }
 
+if (isset($_POST['hide_board'])) {
+	$value = $_POST['hide_board'] == 'true' ? 1 : 0;
+	$row = 'hide_' . $Game->get_my_color();
+	Mysql::get_instance()->query("UPDATE `bs2_game` SET $row = $value WHERE `game_id` = $Game->id");
+}
+
 
 // run the ship count clicks
 if (isset($_POST['shipcheck'])) {
@@ -177,7 +183,7 @@ if (isset($_POST['method'])) {
 	try {
 		if (isset($_POST['done'])) {
 			$Game->setup_done( );
-			$return['redirect'] = (($Game->test_ready( )) ? 'game.php?id='.$Game->id : 'index.php');
+			$return['redirect'] = 'index.php';// (($Game->test_ready( )) ? 'game.php?id='.$Game->id : 'index.php');
 		}
 		else {
 			switch ($_POST['method']) {

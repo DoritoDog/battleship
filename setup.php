@@ -59,6 +59,7 @@ $meta['head_data'] = '
 	<script type="text/javascript">//<![CDATA[
 		var game_id = "'.$_SESSION['game_id'].'";
 		var color = "'.$Game->get_my_color( ).'";
+		var rootUrl = "' . $GLOBALS['_ROOT_URI'] . '";
 	//]]></script>
 	<script type="text/javascript" src="scripts/setup.js"></script>
 ';
