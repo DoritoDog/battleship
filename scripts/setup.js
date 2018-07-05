@@ -3,7 +3,7 @@ var reload = true; // do not change this
 var id1 = -1;
 var canPlaceSingleBoats = false;
 
-$(document).ready( function( ) {
+$(document).ready( function() {
 
 	// make the board clickable
 	$('#board_wrapper').on('click', 'div.board div.row:not(div.top, div.bottom) div:not(div.side)', function(evnt) {
@@ -16,7 +16,7 @@ $(document).ready( function( ) {
 			$('#method').val('remove');
 			$('#value').val(id);
 
-			run_ajax( );
+			run_ajax();
 
 			return false;
 		}
@@ -60,18 +60,19 @@ $(document).ready( function( ) {
 
 
 	// run the unplaced boat clicks
-	$('#boat_wrapper').on('click', 'div.boat', function( ) {
+	$('#boat_wrapper').on('click', 'div.boat', function() {
 		$('#method').val('random_boat');
-		$('#value').val($('div', this).length);
+		const value = [$('div', this).length, this.classList[1]];
+		$('#value').val(value);
 
-		run_ajax( );
+		run_ajax();
 
 		return false;
 	}).find('div.boat').css('cursor', 'pointer').attr('title', 'Randomly place this boat');
 
 
 	// run the buttons and form
-	$('input.button').on('click', function( ) {
+	$('input.button').on('click', function() {
 		var id = $(this).attr('id');
 
 		if ('done' == id) {
@@ -83,11 +84,11 @@ $(document).ready( function( ) {
 			$.ajax({
 				type: 'POST',
 				url: 'ajax_helper.php',
-				data: $('.forms form').serialize( )+'&done=1',
+				data: $('.forms form').serialize()+'&done=1',
 				success: function(msg) {
 					// if something happened, just reload
 					if ('{' != msg[0]) {
-						if (reload) { window.location.reload( ); }
+						if (reload) { window.location.reload(); }
 						return;
 					}
 
@@ -132,7 +133,7 @@ $(document).ready( function( ) {
  * @action clears the dynamic form elements
  * @return void
  */
-function clear_form( ) {
+function clear_form() {
 	id1 = -1;
 	$('#method').val('');
 	$('#value').val('');
@@ -167,7 +168,7 @@ function run_ajax( ) {
 	$.ajax({
 		type: 'POST',
 		url: 'ajax_helper.php',
-		data: $('.forms form').serialize( ),
+		data: $('.forms form').serialize(),
 		success: function(msg) {
 			// if something happened, just reload
 			if (msg[0] != '{') {

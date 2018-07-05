@@ -187,15 +187,15 @@ if (isset($_POST['method'])) {
 		}
 		else {
 			switch ($_POST['method']) {
-				case 'clear' :
+				case 'clear':
 					$Game->setup_action('clear_board');
 					break;
 
-				case 'random' :
+				case 'random':
 					$Game->setup_action('random_board');
 					break;
 
-				case 'between' :
+				case 'between':
 					list($value1, $value2) = explode(':', $_POST['value']);
 					$Game->setup_action('boat_between', $value1, $value2);
 					break;
@@ -204,11 +204,11 @@ if (isset($_POST['method'])) {
 					$Game->setup_action('single_boat', $_POST['value']);
 					break;
 
-				case 'random_boat' :
+				case 'random_boat':
 					$Game->setup_action('random_boat', $_POST['value']);
 					break;
 
-				case 'remove' :
+				case 'remove':
 					$Game->setup_action('remove_boat', $_POST['value']);
 					break;
 			} // end method switch

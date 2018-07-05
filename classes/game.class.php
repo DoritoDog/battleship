@@ -92,6 +92,8 @@ class Game
 	 */
 	public $fleet_type;
 
+	public $time_to_move;
+
 
 	/** public property turn
 	 *		Holds the game's current turn
@@ -1175,17 +1177,11 @@ class Game
 		}
 
 		$html = '<div class="boats">';
-		// Case 1 loops through these to display them on setup.
-		$russian_boats = ['cartel', 'corvette', 'escourt', 'gunboat'];
-		$russian_boats_index = 0;
-
-		$two_tile_boats_index = 0;
-		$three_tile_boats_index = 0;
 	
-		foreach ($boats as $boat) {
-			$html .= '<div class="boat">';
+		foreach ($boats as $boat_key => $boat_val) {
+			$html .= '<div class="boat ' . $boat_key . '">';
 
-			switch ($boat) {
+			switch ($boat_val) {
 				case 5 :
 					$html .= '<div class="h-bow">&nbsp;</div><div class="h-fore">&nbsp;</div><div class="h-mid">&nbsp;</div><div class="h-aft">&nbsp;</div><div class="h-stern">&nbsp;</div>';
 					break;
@@ -1195,28 +1191,49 @@ class Game
 					break;
 
 				case 3 :
-					$html .= $three_tile_boats_index === 0 ?
-					'<div class="h-bow">&nbsp;</div><div class="h-mid">&nbsp;</div><div class="h-stern">&nbsp;</div>' :
-					'<div class="h-sub-bow">&nbsp;</div><div class="h-sub-mid">&nbsp;</div><div class="h-sub-stern">&nbsp;</div>';
-
-					$three_tile_boats_index++;
-					break;
-
-				case 2 :
 					if ($this->fleet_type == 'Russian') {
-						$html .= $two_tile_boats_index === 0 ?
-						'<div class="h-bow">&nbsp;</div><div class="h-stern">&nbsp;</div>' :
-						'<div class="h-frig-bow">&nbsp;</div><div class="h-frig-stern">&nbsp;</div>';
-						break;
+						if ($boat_key == 'e') {
+							$html .= '<div class="h-bow">&nbsp;</div><div class="h-mid">&nbsp;</div><div class="h-stern">&nbsp;</div>';
+						}
+						else if ($boat_key == 'h') {
+							$html .= '<div class="h-sub-bow">&nbsp;</div><div class="h-sub-mid">&nbsp;</div><div class="h-sub-stern">&nbsp;</div>';
+						}
+					}
+					else {
+						if ($boat_key == 'j') {
+							$html .= '<div class="h-bow">&nbsp;</div><div class="h-mid">&nbsp;</div><div class="h-stern">&nbsp;</div>';
+						}
+						else if ($boat_key == 'm') {
+							$html .= '<div class="h-sub-bow">&nbsp;</div><div class="h-sub-mid">&nbsp;</div><div class="h-sub-stern">&nbsp;</div>';
+						}
+					}
+
+					break;
+				case 2 :
+					if ($this->fleet_type == 'Russian' && $boat_key == 'm') {
+						$html .= '<div class="h-frig-bow">&nbsp;</div><div class="h-frig-stern">&nbsp;</div>';
 					}
 					else {
 						$html .= '<div class="h-bow">&nbsp;</div><div class="h-stern">&nbsp;</div>';
-						break;
 					}
-				case 1 :
-					$class = $russian_boats[$russian_boats_index];
-					$russian_boats_index++;
-					$html .= '<div class="h-' . $class . '">&nbsp;</div>';
+
+					break;
+				case 1:
+					switch ($boat_key) {
+						case 'q':
+						$html .= '<div class="h-cartel">&nbsp;</div>';
+							break;
+						case 'r':
+						$html .= '<div class="h-corvette">&nbsp;</div>';
+							break;
+						case 's':
+						$html .= '<div class="h-escourt">&nbsp;</div>';
+							break;
+						case 't':
+						$html .= '<div class="h-gunboat">&nbsp;</div>';
+							break;
+					}
+
 					break;
 			}
 
@@ -1246,11 +1263,12 @@ class Game
 			if ($this->fleet_type === 'Russian' && $is_russian_action) {
 				$args = func_get_args();
 				$args[] = 'true';
+				array_slice($args, 1);
 				call_user_func_array(array($this->_boards['player'], $action), array_slice($args, 1));
 			}
 			else {
 				$args = func_get_args();
-			call_user_func_array(array($this->_boards['player'], $action), array_slice($args, 1));
+				call_user_func_array(array($this->_boards['player'], $action), array_slice($args, 1));
 			}
 
 			// if they changed anything, set them as not ready
@@ -1371,6 +1389,7 @@ class Game
 		$this->state = $result['state'];
 		$this->method = $result['method'];
 		$this->fleet_type = $result['fleet_type'];
+		$this->time_to_move = $result['timer'];
 		$this->paused = (bool) $result['paused'];
 		$this->create_date = strtotime($result['create_date']);
 		$this->modify_date = strtotime($result['modify_date']);

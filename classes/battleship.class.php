@@ -483,13 +483,16 @@ class Battleship
 	 * @action randomly fills the board
 	 * @return void
 	 */
-	public function random_boat($size, $is_russian = false)
+	public function random_boat($args, $is_russian = false)
 	{
+		$args = explode(',', $args);
+		$size = $args[0];
+		$id = $args[1];
 		call(__METHOD__);
 		call($size);
 
 		// find out which boats are not yet on the board
-		$boats = $this->get_missing_boats( );
+		$boats = $this->get_missing_boats();
 
 		if (!$is_russian && !in_array($size, $boats)) {
 			throw new MyException(__METHOD__.': That boat is already on the board');
@@ -507,9 +510,9 @@ class Battleship
 			// see if we can place a boat there (do it if we can)
 			try {
 				if ($is_russian)
-					$this->_place_boat_russian($bow, $size, $orient);
+					$this->_place_boat_russian($bow, $size, $orient, $id);
 				else
-					$this->_place_boat($bow, $size, $orient);
+					$this->_place_boat($bow, $size, $orient, $id);
 
 				$placed = true;
 			}
@@ -721,7 +724,7 @@ class Battleship
 	 * @action places the boat
 	 * @return void
 	 */
-	protected function _place_boat($bow, $size, $orient)
+	protected function _place_boat($bow, $size, $orient, $id = null)
 	{
 		call(__METHOD__);
 		call($bow);
@@ -738,7 +741,7 @@ class Battleship
 		if (empty($bows[$size])) {
 			throw new MyException(__METHOD__.': This boat is not available to place', 103);
 		}
-		$bow_value = $bows[$size];
+		$bow_value = is_null($id) ? $bows[$size] : $id;
 
 		// change the testing coefficient depending on our orientation
 		$bow_test = ((bool) $orient) ? floor($bow * 0.1) : ($bow % 10);
@@ -789,7 +792,7 @@ class Battleship
 		return null;
 	}
 
-	protected function _place_boat_russian($bow, $size, $orient)
+	protected function _place_boat_russian($bow, $size, $orient, $id = null)
 	{
 		call(__METHOD__);
 		call($bow);
@@ -806,7 +809,7 @@ class Battleship
 		if (!$this->_does_assoc_array_contain($boats, $size))
 			throw new MyException(__METHOD__.': This boat is not available to place', 103);
 
-		$bow_value = $this->_get_first_assoc_key($boats, $size);
+		$bow_value = is_null($id) ? $this->_get_first_assoc_key($boats, $size) : $id;
 		$bow_test = ((bool) $orient) ? floor($bow * 0.1) : ($bow % 10);
 		
 		if ((0 > $bow) || (10 >= ($bow_test + $size))) {

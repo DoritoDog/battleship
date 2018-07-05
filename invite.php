@@ -140,7 +140,9 @@ $contents = <<< EOF
 
 		<div><label for="opponent">Opponent</label><select id="opponent" name="opponent">{$opponent_selection}</select></div>
 		<div><label for="method">Method</label><select id="method" name="method">{$method_selection}</select></div>
-		<div><label for="timer">Timer</label><select id="timer" name="timer">{$timer_selection}</select></div>
+		<div>
+			<label for="timer">Time To Move</label><select id="timer" name="timer">{$timer_selection}</select>
+		</div>
 		<div>
 			<label for="fleet_type">Fleet Type</label>
 			<select id="fleet_type" name="fleet_type">{$fleet_selection}</select>
