@@ -161,6 +161,42 @@ div.v-stern {
   background-image: url("../images/v_stern.gif")
 }
 
+div.v-sub-bow {
+  background-image: url("../images/v_sub_bow.png");
+}
+
+div.v-sub-mid {
+  background-image: url("../images/v_sub_mid.png");
+}
+
+div.v-sub-stern {
+  background-image: url("../images/v_sub_stern.png");
+}
+
+div.v-frig-bow {
+  background-image: url("../images/v_frig_bow.png");
+}
+
+div.v-frig-stern {
+  background-image: url("../images/v_frig_stern.png");
+}
+
+div.v-cartel {
+  background-image: url("../images/cartel.png");
+}
+
+div.v-corvette {
+  background-image: url("../images/corvette.png");
+}
+
+div.v-escourt {
+  background-image: url("../images/escourt.png");
+}
+
+div.v-gunboat {
+  background-image: url("../images/gunboat.png");
+}
+
 div.h-bow {
   background-image: url("../images/h_bow.gif")
 }
@@ -181,13 +217,49 @@ div.h-stern {
   background-image: url("../images/h_stern.gif")
 }
 
-div.h-single {
+div.h-sub-bow {
+  background-image: url("../images/h_sub_bow.png");
+}
+
+div.h-sub-mid {
+  background-image: url("../images/h_sub_mid.png");
+}
+
+div.h-sub-stern {
+  background-image: url("../images/h_sub_stern.png");
+}
+
+div.h-frig-bow {
+  background-image: url("../images/h_frig_bow.png");
+}
+
+div.h-frig-stern {
+  background-image: url("../images/h_frig_stern.png");
+}
+
+div.h-cartel {
+  background-image: url("../images/cartel.png");
+}
+
+div.h-corvette {
+  background-image: url("../images/corvette.png");
+}
+
+div.h-escourt {
+  background-image: url("../images/escourt.png");
+}
+
+div.h-gunboat {
+  background-image: url("../images/gunboat.png");
+}
+
+/* div.h-single {
   background-image: url("../images/h_bship.png");
 }
 
 div.v-single {
   background-image: url("../images/h_bship.png");
-}
+} */
 
 div.board div.prevshot {
   border: 2px solid yellow;

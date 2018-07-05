@@ -126,9 +126,9 @@ if (isset($_POST['get_shots'])) {
 	$mysql = Mysql::get_instance();
 
 	$game_id = $_SESSION['game_id'];
-	$response = $mysql->fetch_assoc("SELECT * FROM shots
-																	 WHERE id = ( SELECT MAX(id) FROM shots )
-																	 AND game_id = $game_id
+	$response = $mysql->fetch_assoc("SELECT * FROM `shots`
+																	 WHERE `id` = ( SELECT MAX(`id`) FROM `shots` )
+																	 AND `game_id` = $game_id
 																	 LIMIT 1;");
 
 	/*if (count($response) > 0) {
@@ -183,7 +183,7 @@ if (isset($_POST['method'])) {
 	try {
 		if (isset($_POST['done'])) {
 			$Game->setup_done( );
-			$return['redirect'] = 'index.php';// (($Game->test_ready( )) ? 'game.php?id='.$Game->id : 'index.php');
+			$return['redirect'] = (($Game->test_ready( )) ? 'game.php?id='.$Game->id : 'invite.php');
 		}
 		else {
 			switch ($_POST['method']) {

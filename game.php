@@ -71,7 +71,7 @@ $chat_data = $Chat->get_box_list( );
 $chat_html = '
 		<div id="chatbox">
 			<form action="'.$_SERVER['REQUEST_URI'].'" method="post"><div>
-				<input id="chat" type="text" name="chat" />
+				<input id="chat" type="text" name="chat" autocomplete=off />
 				<label for="private" class="inline"><input type="checkbox" name="private" id="private" value="yes" /> Private</label>
 			</div></form>
 			<dl id="chats">';

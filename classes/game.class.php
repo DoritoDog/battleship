@@ -607,7 +607,12 @@ class Game
 		}
 
 		if ($this->test_nudge( )) {
-			Email::send('nudge', $this->_players['opponent']['player_id'], array('opponent' => $this->_players['player']['object']->username, 'game_id' => $this->id));
+			Email::send(
+				'nudge',
+				$this->_players['opponent']['player_id'],
+				array('opponent' => $this->_players['player']['object']->username, 'game_id' => $this->id)
+			);
+			
 			$this->_mysql->delete(self::GAME_NUDGE_TABLE, " WHERE game_id = '{$this->id}' ");
 			$this->_mysql->insert(self::GAME_NUDGE_TABLE, array('game_id' => $this->id, 'player_id' => $this->_players['opponent']['player_id']));
 			return true;
@@ -786,11 +791,15 @@ class Game
 					switch (strtolower($orig_board[$i])) {
 						case 'a':
 						case 'e':
-						case 'h':
 						case 'k':
-						case 'm':
 						case 'o':
 							$class = ' class="h-bow"';
+							break;
+						case 'h':
+							$class = ' class="h-sub-bow"';
+							break;
+						case 'm':
+							$class = ' class="h-frig-bow"';
 							break;
 	
 						case 'b':
@@ -798,8 +807,10 @@ class Game
 							break;
 	
 						case 'f' :
-						case 'i' :
 							$class = ' class="h-mid"';
+							break;
+						case 'i':
+							$class = ' class="h-sub-mid"';
 							break;
 						
 						case 'c':
@@ -808,18 +819,28 @@ class Game
 	
 						case 'd':
 						case 'g':
-						case 'j':
 						case 'l':
-						case 'n':
 						case 'p':
 							$class = ' class="h-stern"';
 							break;
+						case 'j':
+							$class = ' class="h-sub-stern"';
+							break;
+						case 'n':
+							$class = ' class="h-frig-stern"';
+							break;
 						
 						case 'q':
+							$class = ' class="h-cartel"';
+							break;
 						case 'r':
+							$class = ' class="h-corvette"';
+							break;
 						case 's':
+							$class = ' class="h-escourt"';
+							break;
 						case 't':
-							$class = ' class="h-single"';
+							$class = ' class="h-gunboat"';
 							break;
 	
 						default :
@@ -842,9 +863,11 @@ class Game
 					case 'a' : // no break
 					case 'f' : // no break
 					case 'j' : // no break
-					case 'm' : // no break
 					case 'p' :
 						$class = ' class="h-bow"';
+						break;
+					case 'm':
+						$class = ' class="h-sub-bow"';
 						break;
 
 					case 'b' : // no break
@@ -854,8 +877,10 @@ class Game
 
 					case 'c' : // no break
 					case 'k' : // no break
-					case 'n' :
 						$class = ' class="h-mid"';
+						break;
+					case 'n':
+						$class = ' class="h-sub-mid"';
 						break;
 
 					case 'd' : // no break
@@ -866,9 +891,11 @@ class Game
 					case 'e' : // no break
 					case 'i' : // no break
 					case 'l' : // no break
-					case 'o' : // no break
 					case 'q' :
 						$class = ' class="h-stern"';
+						break;
+					case 'o':
+						$class = ' class="h-sub-stern"';
 						break;
 
 					default  :
@@ -960,59 +987,59 @@ class Game
 					case 'c':
 					case 'd':
 						$pattern = '/[a-d]/i';
-						$ship = 'Carrier';
+						$ship = 'Battleship';
 						break;
 
 					case 'e':
 					case 'f': 
 					case 'g':
 						$pattern = '/[efg]/i';
-						$ship = 'Battleship 1';
+						$ship = 'Cruiser';
 						break;
 					
 					case 'h':
 					case 'i':
 					case 'j':
 						$pattern = '/[hij]/i';
-						$ship = 'Battleship 2';
+						$ship = 'Submarine';
 						break;
 
 					case 'k':
 					case 'l':
 						$pattern = '/[kl]/i';
-						$ship = 'Cruiser 1';
+						$ship = 'Destroyer';
 						break;
 					
 					case 'm':
 					case 'n':
 						$pattern = '/[mn]/i';
-						$ship = 'Cruiser 2';
+						$ship = 'Frigate';
 						break;
 
 					case 'o':
 					case 'p':
 						$pattern = '/[op]/i';
-						$ship = 'Cruiser 3';
+						$ship = 'Unnamed';
 						break;
 
 					case 'q':
 					$pattern = '/[q]/i';
-					$ship = 'Smallest 1';
+					$ship = 'Gunboat';
 					break;
 
 					case 'r':
 					$pattern = '/[r]/i';
-					$ship = 'Smallest 2';
+					$ship = 'Escourt';
 					break;
 
 					case 's':
 					$pattern = '/[s]/i';
-					$ship = 'Smallest 3';
+					$ship = 'Corvette';
 					break;
 
 					case 't':
 					$pattern = '/[t]/i';
-					$ship = 'Smallest 4';
+					$ship = 'Cartel';
 					break;
 				}
 			}
@@ -1061,7 +1088,7 @@ class Game
 			} // End of is russian check.
 
 			// if we can't find it now
-			if (0 == preg_match($pattern, $this_board)) {
+			if (!is_null($pattern) && 0 == preg_match($pattern, $this_board)) {
 				// it must have been sunk this round
 				call('--SHIP SUNK--');
 				$sunk[] = $ship;
@@ -1148,9 +1175,14 @@ class Game
 		}
 
 		$html = '<div class="boats">';
+		// Case 1 loops through these to display them on setup.
+		$russian_boats = ['cartel', 'corvette', 'escourt', 'gunboat'];
+		$russian_boats_index = 0;
 
+		$two_tile_boats_index = 0;
+		$three_tile_boats_index = 0;
 	
-		foreach ($boats as $boat) 	{
+		foreach ($boats as $boat) {
 			$html .= '<div class="boat">';
 
 			switch ($boat) {
@@ -1163,14 +1195,28 @@ class Game
 					break;
 
 				case 3 :
-					$html .= '<div class="h-bow">&nbsp;</div><div class="h-mid">&nbsp;</div><div class="h-stern">&nbsp;</div>';
+					$html .= $three_tile_boats_index === 0 ?
+					'<div class="h-bow">&nbsp;</div><div class="h-mid">&nbsp;</div><div class="h-stern">&nbsp;</div>' :
+					'<div class="h-sub-bow">&nbsp;</div><div class="h-sub-mid">&nbsp;</div><div class="h-sub-stern">&nbsp;</div>';
+
+					$three_tile_boats_index++;
 					break;
 
 				case 2 :
-					$html .= '<div class="h-bow">&nbsp;</div><div class="h-stern">&nbsp;</div>';
-					break;
+					if ($this->fleet_type == 'Russian') {
+						$html .= $two_tile_boats_index === 0 ?
+						'<div class="h-bow">&nbsp;</div><div class="h-stern">&nbsp;</div>' :
+						'<div class="h-frig-bow">&nbsp;</div><div class="h-frig-stern">&nbsp;</div>';
+						break;
+					}
+					else {
+						$html .= '<div class="h-bow">&nbsp;</div><div class="h-stern">&nbsp;</div>';
+						break;
+					}
 				case 1 :
-					$html .= '<div class="h-single">&nbsp;</div>';
+					$class = $russian_boats[$russian_boats_index];
+					$russian_boats_index++;
+					$html .= '<div class="h-' . $class . '">&nbsp;</div>';
 					break;
 			}
 

@@ -24,8 +24,7 @@ if (isset($_POST['invite'])) {
 		Flash::store('Invitation Sent Successfully', 'setup.php?id='.$game_id.$GLOBALS['_&_DEBUG_QUERY']);
 	}
 	catch (MyException $e) {
-		var_dump($e);
-		//Flash::store('Invitation FAILED !', false);
+		Flash::store('Invitation FAILED !', false);
 	}
 }
 
@@ -40,7 +39,6 @@ if (isset($_POST['find_game'])) {
 	$game = $mysql->fetch_assoc("SELECT * FROM `pending_game_searches`
 															 WHERE `method` = '{$insert_data['method']}' AND
 															 `fleet_type` = '{$insert_data['fleet_type']}'");
-	var_dump($game);
 	if (empty($game)) {
 		$mysql->insert('pending_game_searches', $insert_data);
 	}
@@ -97,6 +95,12 @@ foreach ($fleet_types as $fleet) {
 	$fleet_selection .= '<option value="'.$fleet.'">'.$fleet.'</option>';
 }
 
+$timers = ['Blitz','2 Minutes','5 Minutes','10 Minutes','30 Minutes','1 Week'];
+$timer_selection = '';
+foreach ($timers as $timer) {
+	$timer_selection .= '<option value="'.$timer.'">'.$timer.'</option>';
+}
+
 
 $meta['title'] = '';
 $meta['foot_data'] = '
@@ -136,6 +140,7 @@ $contents = <<< EOF
 
 		<div><label for="opponent">Opponent</label><select id="opponent" name="opponent">{$opponent_selection}</select></div>
 		<div><label for="method">Method</label><select id="method" name="method">{$method_selection}</select></div>
+		<div><label for="timer">Timer</label><select id="timer" name="timer">{$timer_selection}</select></div>
 		<div>
 			<label for="fleet_type">Fleet Type</label>
 			<select id="fleet_type" name="fleet_type">{$fleet_selection}</select>
