@@ -108,7 +108,6 @@ if (('Finished' == $Game->state) && ! $Game->is_player($_SESSION['player_id'])) 
 }
 
 $shots = $Game->get_shot_count( );
-var_dump($shots);
 
 // grab the previous shots
 list($prev_shots, $prev_color) = $Game->get_previous_shots( );
