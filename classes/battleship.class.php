@@ -487,7 +487,10 @@ class Battleship
 	{
 		$args = explode(',', $args);
 		$size = $args[0];
-		$id = $args[1];
+		$id = null;
+		if (count($args) > 1)
+			$id = $args[1];
+
 		call(__METHOD__);
 		call($size);
 
