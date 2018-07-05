@@ -1043,6 +1043,10 @@ class Game
 					$pattern = '/[t]/i';
 					$ship = 'Cartel';
 					break;
+
+					default:
+						$pattern = null;
+						break;
 				}
 			}
 			else {
@@ -1084,6 +1088,10 @@ class Game
 						case 'q' :
 							$pattern = '/[pq]/i';
 							$ship = 'Destroyer';
+							break;
+						
+						default:
+							$pattern = null;
 							break;
 					}
 				}
@@ -1128,13 +1136,13 @@ class Game
 	}
 
 
-	public function get_salvo_shots( )
+	public function get_salvo_shots()
 	{
-		return $this->_boards['player']->get_salvo_shots( );
+		return $this->_boards['player']->get_salvo_shots($this->fleet_type == 'Russian');
 	}
 
 
-	public function get_shot_count( )
+	public function get_shot_count()
 	{
 		switch (strtolower($this->method)) {
 			case 'multi':
@@ -1146,7 +1154,7 @@ class Game
 				break;
 
 			case 'salvo' :
-				$shots = $this->get_salvo_shots( );
+				$shots = $this->get_salvo_shots();
 				break;
 
 			case 'single' :

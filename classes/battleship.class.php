@@ -389,10 +389,11 @@ class Battleship
 	 * @param void
 	 * @return int number of shots
 	 */
-	public function get_salvo_shots( )
+	public function get_salvo_shots($is_russian = false)
 	{
-		$missing = $this->get_missing_boats( );
-		return (5 - count($missing));
+		$missing = $is_russian ? $this->get_missing_boats_russian() : $this->get_missing_boats();
+		$total = $is_russian ? 10 : 5;
+		return ($total - count($missing));
 	}
 
 
