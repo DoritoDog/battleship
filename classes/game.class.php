@@ -615,7 +615,7 @@ class Game
 		$opp_color = $this->_players['opponent']['color'];
 		$is_focused = (bool)$game[$opp_color . '_focused'];
 		if ($is_focused)
-			return;
+			return false;
 
 		if ($this->test_nudge( )) {
 			Email::send(
