@@ -13,7 +13,7 @@ if (('finished' == state) || ('paused' == state)) {
 // PANIC BUTTON
 // hides the players board when it's clicked in
 // case the opponent walked in the room
-$('div.active').on('click', 'div.first', function( ) {
+$('div.active').on('click', 'div.first', function() {
 	$this = $(this);
 	if (board_storage) {
 		$this.replaceWith(board_storage);
@@ -73,9 +73,10 @@ if (my_turn) {
 			--shots;
 
 			// Sending one hit for validation.
-			$.post("game.php", { shot: id }, (data, status) => {
-				const index = data.indexOf('}') + 1;
-				const response = JSON.parse(data.slice(0, index));
+			$.post("ajax_helper.php", { shot: id }, (data, status) => {
+				// const index = data.indexOf('}') + 1;
+				// const response = JSON.parse(data.slice(0, index));
+				const response = JSON.parse(data);
 				didHit = response.value === 'true' ? true : false;
 
 				// update the shot markers

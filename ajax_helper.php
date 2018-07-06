@@ -143,6 +143,23 @@ if (isset($_POST['get_shots'])) {
 	exit;
 }
 
+if (isset($_POST['shot'])) {
+	$coordinate = $_POST['shot'];
+	$game_id = $_SESSION['game_id'];
+	$args = [
+		'player_id' => (int)$_SESSION['player_id'],
+		'game_id' => $game_id,
+		'coordinate' => $coordinate,
+	];
+
+	$response = new stdClass();
+	$response->value = $Game->test_hit($coordinate, true);
+	echo json_encode($response);
+
+	Mysql::get_instance()->insert('shots', $args);
+	exit;
+}
+
 if (isset($_POST['focus'])) {
 	$post = $_POST['focus'];
 	$column = $Game->get_my_color() . '_focused';

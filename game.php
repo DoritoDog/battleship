@@ -27,7 +27,6 @@ else {
 // always refresh the game data, there may be more than one person online
 try {
 	$Game = new Game((int) $_SESSION['game_id']);
-	$mysql = Mysql::get_instance();
 
 	if ( ! $Game->test_ready( )) {
 		if ( ! defined('DEBUG') || ! DEBUG) {
@@ -50,22 +49,6 @@ catch (MyException $e) {
 	}
 
 	exit;
-}
-
-
-if (isset($_POST['shot'])) {
-	$coordinate = $_POST['shot'];
-	$game_id = $_SESSION['game_id'];
-	$args = [
-		'player_id' => (int)$_SESSION['player_id'],
-		'game_id' => $game_id,
-		'coordinate' => $coordinate,
-	];
-
-	$response = new stdClass();
-	$response->value = $Game->test_hit($coordinate, true);
-	echo json_encode($response);
-	Mysql::get_instance()->insert('shots', $args);
 }
 
 
