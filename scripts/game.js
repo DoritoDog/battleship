@@ -360,4 +360,6 @@ if (updateFocus) {
 	});
 }
 
-$.post('timer.php', { timer: 1 }, (data, status) => { });
+// var xmlhttp = new XMLHttpRequest();
+// xmlhttp.open("GET", "timer.php?timer=1", true);
+// xmlhttp.send();

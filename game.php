@@ -51,7 +51,6 @@ catch (MyException $e) {
 	exit;
 }
 
-
 $players = $Game->get_players( );
 $Chat = new Chat($_SESSION['player_id'], $_SESSION['game_id']);
 $chat_data = $Chat->get_box_list( );

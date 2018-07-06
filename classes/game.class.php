@@ -611,6 +611,12 @@ class Game
 			throw new MyException(__METHOD__.': Trying to perform an action on a paused game');
 		}
 
+		$game = $this->_mysql->fetch_assoc("SELECT * FROM `bs2_game` WHERE `game_id` = $this->id");
+		$opp_color = $this->_players['opponent']['color'];
+		$is_focused = $game[$opp_color . '_focused'];
+		if ($is_focused)
+			return;
+
 		if ($this->test_nudge( )) {
 			Email::send(
 				'nudge',
@@ -1024,7 +1030,7 @@ class Game
 					case 'o':
 					case 'p':
 						$pattern = '/[op]/i';
-						$ship = 'Unnamed';
+						$ship = 'Monitor';
 						break;
 
 					case 'q':
