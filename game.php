@@ -10,16 +10,6 @@ else {
 	header('Location:' . 'index.php');
 	exit;
 }
-// elseif ( ! isset($_SESSION['game_id'])) {
-// 	if ( ! defined('DEBUG') || ! DEBUG) {
-// 		Flash::store('No Game Id Given !');
-// 	}
-// 	else {
-// 		call('NO GAME ID GIVEN');
-// 	}
-
-// 	exit;
-// }
 
 // ALL GAME FORM SUBMISSIONS ARE AJAXED THROUGH /scripts/game.js
 

@@ -613,7 +613,7 @@ class Game
 
 		$game = $this->_mysql->fetch_assoc("SELECT * FROM `bs2_game` WHERE `game_id` = $this->id");
 		$opp_color = $this->_players['opponent']['color'];
-		$is_focused = $game[$opp_color . '_focused'];
+		$is_focused = (bool)$game[$opp_color . '_focused'];
 		if ($is_focused)
 			return;
 
