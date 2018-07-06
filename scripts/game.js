@@ -350,7 +350,7 @@ function ajax_refresh( ) {
 	refresh_timer = setTimeout('ajax_refresh()', refresh_timeout);
 }
 
-var updateFocus = false;
+var updateFocus = true;
 if (updateFocus) {
 	$(window).blur(function() {
 		$.post('ajax_helper.php', { focus: 0 }, (data, status) => { });
