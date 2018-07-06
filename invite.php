@@ -95,10 +95,17 @@ foreach ($fleet_types as $fleet) {
 	$fleet_selection .= '<option value="'.$fleet.'">'.$fleet.'</option>';
 }
 
-$timers = ['Blitz','2 Minutes','5 Minutes','10 Minutes','30 Minutes','1 Week'];
+$timers = [
+	'Blitz' => 60,
+	'2 Minutes' => 120,
+	'5 Minutes' => 300,
+	'10 Minutes' => 600,
+	'30 Minutes' => 1800,
+	'1 Week' => 10080
+];
 $timer_selection = '';
-foreach ($timers as $timer) {
-	$timer_selection .= '<option value="'.$timer.'">'.$timer.'</option>';
+foreach ($timers as $timer => $seconds) {
+	$timer_selection .= '<option value="'.$seconds.'">'.$timer.'</option>';
 }
 
 

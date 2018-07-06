@@ -94,6 +94,9 @@ class Game
 
 	public $time_to_move;
 
+	public $white_focused;
+	public $black_focused;
+
 
 	/** public property turn
 	 *		Holds the game's current turn
@@ -194,13 +197,13 @@ class Game
 		call($this->id);
 
 		if (is_null($Mysql)) {
-			$Mysql = Mysql::get_instance( );
+			$Mysql = Mysql::get_instance();
 		}
 
 		$this->_mysql = $Mysql;
 
 		try {
-			$this->_pull( );
+			$this->_pull();
 		}
 		catch (MyException $e) {
 			throw $e;
@@ -731,7 +734,7 @@ class Game
 			throw new MyException(__METHOD__.': Player session id is missing');
 		}
 
-		if ('first' == $type) {
+		if ($type == 'first') {
 			$color = $this->_players['player']['color'];
 			$theirs = false;
 		}
@@ -1398,6 +1401,8 @@ class Game
 		$this->method = $result['method'];
 		$this->fleet_type = $result['fleet_type'];
 		$this->time_to_move = $result['timer'];
+		$this->white_focused = $result['white_focused'];
+		$this->black_focused = $result['black_focused'];
 		$this->paused = (bool) $result['paused'];
 		$this->create_date = strtotime($result['create_date']);
 		$this->modify_date = strtotime($result['modify_date']);

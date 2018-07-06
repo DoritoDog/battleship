@@ -6,16 +6,20 @@ require_once 'includes/inc.global.php';
 if (isset($_GET['id'])) {
 	$_SESSION['game_id'] = (int) $_GET['id'];
 }
-elseif ( ! isset($_SESSION['game_id'])) {
-	if ( ! defined('DEBUG') || ! DEBUG) {
-		Flash::store('No Game Id Given !');
-	}
-	else {
-		call('NO GAME ID GIVEN');
-	}
-
+else {
+	header('Location:' . 'index.php');
 	exit;
 }
+// elseif ( ! isset($_SESSION['game_id'])) {
+// 	if ( ! defined('DEBUG') || ! DEBUG) {
+// 		Flash::store('No Game Id Given !');
+// 	}
+// 	else {
+// 		call('NO GAME ID GIVEN');
+// 	}
+
+// 	exit;
+// }
 
 // ALL GAME FORM SUBMISSIONS ARE AJAXED THROUGH /scripts/game.js
 
@@ -23,6 +27,7 @@ elseif ( ! isset($_SESSION['game_id'])) {
 // always refresh the game data, there may be more than one person online
 try {
 	$Game = new Game((int) $_SESSION['game_id']);
+	$mysql = Mysql::get_instance();
 
 	if ( ! $Game->test_ready( )) {
 		if ( ! defined('DEBUG') || ! DEBUG) {
@@ -107,13 +112,13 @@ if (('Finished' == $Game->state) && ! $Game->is_player($_SESSION['player_id'])) 
 	$chat_html = '';
 }
 
-$shots = $Game->get_shot_count( );
+$shots = $Game->get_shot_count();
 
 // grab the previous shots
-list($prev_shots, $prev_color) = $Game->get_previous_shots( );
+list($prev_shots, $prev_color) = $Game->get_previous_shots();
 
 // grab any previous sinkings
-$sunk = $Game->get_sunk( );
+$sunk = $Game->get_sunk();
 
 $sunk_text = '';
 $win_text = '';
@@ -180,6 +185,32 @@ $meta['foot_data'] = '
 ';
 
 echo get_header($meta);
+
+$color = $Game->get_my_color();
+$board = $mysql->fetch_assoc("SELECT * FROM `bs2_game_board` WHERE `game_id` = $Game->id 																											ORDER BY `move_date` ASC LIMIT 1");
+$old_move_date = strtotime($board['move_date']);
+
+if(isset($_SERVER['HTTP_CACHE_CONTROL'])) {
+	$timout = $Game->time_to_move;
+	sleep($timout);
+
+	$board = $mysql->fetch_assoc("SELECT * FROM `bs2_game_board` WHERE `game_id` = $Game->id 																											ORDER BY `move_date` ASC LIMIT 1");
+	$new_move_date = strtotime($board['move_date']);
+
+	// Don't nudge a player if they ended up making a move in that time.
+	if ($new_move_date == $move_date) {
+		if ($color == 'white') {
+			if (!$Game->black_focused) {
+				$Game->nudge();
+			}
+		}
+		else if ($color == 'black') {
+			if (!$Game->white_focused) {
+				$Game->nudge();
+			}
+		}
+	}
+}
 
 ?>
 

@@ -219,7 +219,7 @@ $('#chatbox form').submit( function( ) {
 	$.ajax({
 		type: 'POST',
 		url: 'ajax_helper.php',
-		data: $('#chatbox form').serialize( ),
+		data: $('#chatbox form').serialize(),
 		success: function(msg) {
 			// if something happened, just reload
 			if ('{' != msg[0]) {
@@ -247,7 +247,7 @@ $('#chatbox form').submit( function( ) {
 
 
 // sunk ship display
-$('span.ships').click( function( ) {
+$('span.ships').click( function() {
 	var id = $(this).attr('id').slice(0, -6);
 
 	if (debug) {
@@ -259,9 +259,7 @@ $('span.ships').click( function( ) {
 		type: 'POST',
 		url: 'ajax_helper.php',
 		data: 'shipcheck=1&id='+id,
-		success: function(msg) {
-			alert(msg);
-		}
+		success: (msg) => { }
 	});
 
 	return false;
@@ -270,16 +268,16 @@ $('span.ships').click( function( ) {
 
 // run the ajax refresher
 if ( ! my_turn && ('finished' != state)) {
-	ajax_refresh( );
+	ajax_refresh();
 
 	// set some things that will halt the timer
-	$('#chatbox form input').focus( function( ) {
+	$('#chatbox form input').focus( function() {
 		clearTimeout(refresh_timer);
 	});
 
-	$('#chatbox form input').blur( function( ) {
-		if ('' != $(this).val( )) {
-			refresh_timer = setTimeout('ajax_refresh( )', refresh_timeout);
+	$('#chatbox form input').blur( function() {
+		if ('' != $(this).val()) {
+			refresh_timer = setTimeout('ajax_refresh()', refresh_timeout);
 		}
 	});
 }
@@ -348,6 +346,15 @@ function ajax_refresh( ) {
 
 	++refresh_timeout;
 
-	refresh_timer = setTimeout('ajax_refresh( )', refresh_timeout);
+	refresh_timer = setTimeout('ajax_refresh()', refresh_timeout);
 }
 
+var updateFocus = true;
+if (updateFocus) {
+	$(window).blur(function() {
+		$.post('ajax_helper.php', { focus: 0 }, (data, status) => { });
+	});
+	$(window).focus(function() {
+		$.post('ajax_helper.php', { focus: 1 }, (data, status) => { });
+	});
+}

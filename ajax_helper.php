@@ -143,10 +143,19 @@ if (isset($_POST['get_shots'])) {
 	exit;
 }
 
+if (isset($_POST['focus'])) {
+	$post = $_POST['focus'];
+	$column = $Game->get_my_color() . '_focused';
+
+	Mysql::get_instance()->query("UPDATE `bs2_game` SET $column = $post WHERE `game_id` = $Game->id");
+	exit;
+}
+
 if (isset($_POST['hide_board'])) {
 	$value = $_POST['hide_board'] == 'true' ? 1 : 0;
 	$row = 'hide_' . $Game->get_my_color();
 	Mysql::get_instance()->query("UPDATE `bs2_game` SET $row = $value WHERE `game_id` = $Game->id");
+	exit;
 }
 
 
@@ -228,6 +237,7 @@ if (isset($_POST['method'])) {
 }
 
 
+
 // make sure we are the player we say we are
 // unless we're an admin, then it's ok
 $player_id = (int) $_POST['player_id'];
@@ -305,4 +315,3 @@ if (isset($_POST['shots'])) {
 	echo json_encode($return);
 	exit;
 }
-
