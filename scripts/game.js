@@ -284,7 +284,7 @@ if ( ! my_turn && ('finished' != state)) {
 
 update_shots( );
 
-if (/*pre_hide_board*/ hideBoard) {
+if (hideBoard) {
 	$('div.active div.first').click();
 }
 
@@ -349,7 +349,7 @@ function ajax_refresh( ) {
 	refresh_timer = setTimeout('ajax_refresh()', refresh_timeout);
 }
 
-var updateFocus = true;
+var updateFocus = false;
 if (updateFocus) {
 	$(window).blur(function() {
 		$.post('ajax_helper.php', { focus: 0 }, (data, status) => { });
@@ -358,3 +358,5 @@ if (updateFocus) {
 		$.post('ajax_helper.php', { focus: 1 }, (data, status) => { });
 	});
 }
+
+$.post('timer.php', { timer: 1 }, (data, status) => { });
