@@ -15,5 +15,7 @@
 /includes/config.php
 /scripts/ba-debug.js
 
+/cron
+
 !/logs/.htaccess
 
