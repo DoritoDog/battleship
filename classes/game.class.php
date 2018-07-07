@@ -362,7 +362,6 @@ class Game
 		$_P['white_id'] = $_P['player_id'];
 		$_P['black_id'] = is_null($opponent_id) ? $_P['opponent'] : $opponent_id;
 		$_P['method'] = $_P['method'];
-		$_P['fleet_type'] = $_P['fleet_type'];
 
 		// You can only play Russian mode with the Single, Multi or Salvo methods.
 		if ($_P['fleet_type'] == 'Russian' && $_P['method'] == 'Five') {
@@ -375,6 +374,7 @@ class Game
 			'black_id',
 			'method',
 			'fleet_type',
+			'timer',
 		);
 
 		$key_list = $required;

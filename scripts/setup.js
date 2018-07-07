@@ -202,7 +202,7 @@ function run_ajax( ) {
 			clear_form( );
 		}
 	});
-
+	
 	return;
 }
 

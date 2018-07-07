@@ -52,14 +52,52 @@ catch (MyException $e) {
 	exit;
 }
 
+$theme = Mysql::get_instance()->fetch_assoc("SELECT * FROM themes WHERE themes.id = (SELECT skin_id FROM bs2_bs_player WHERE bs2_bs_player.player_id = 1)");
+$shipGraphics = [
+	'v-bow' => 'v_bow.gif',
+	'v-fore' => 'v_fore.gif',
+	'v-mid' => 'v_mid.gif',
+	'v-aft' => 'v_aft.gif',
+	'v-stern' => 'v_stern.gif',
+	'v-sub-bow' => 'v_sub_bow.png',
+	'v-sub-mid' => 'v_sub_mid.png',
+	'v-sub-stern' => 'v_sub_stern.png',
+	'v-frig-bow' => 'v_frig_bow.png',
+	'v-frig-stern' => 'v_frig_stern.png',
+	'v-cartel' => 'cartel.png',
+	'v-corvette' => 'corvette.png',
+	'v-escourt' => 'escourt.png',
+	'v-gunboat' => 'gunboat.png',
+	'h-bow' => 'h_bow.gif',
+	'h-fore' => 'h_fore.gif',
+	'h-mid' => 'h_mid.gif',
+	'h-aft' => 'h_aft.gif',
+	'h-stern' => 'h_stern.gif',
+	'h-sub-bow' => 'h_sub_bow.png',
+	'h-sub-mid' => 'h_sub_mid.png',
+	'h-sub-stern' => 'h_sub_stern.png',
+	'h-frig-bow' => 'h_frig_bow.png',
+	'h-frig-stern' => 'h_frig_stern.png',
+	'h-cartel' => 'cartel.png',
+	'h-corvette' => 'corvette.png',
+	'h-escourt' => 'escourt.png',
+	'h-gunboat' => 'gunboat.png',
+];
+$style = '';
+foreach ($shipGraphics as $class => $graphic) {
+	$style .= "div.$class { background-image: url('".$GLOBALS['_ROOT_URI'].'images/'.$theme['filesdir'].'/'."$graphic') } \n";
+}
 
 $meta['title'] = GAME_NAME.' Game #'.$_SESSION['game_id'].' vs '.$Game->name.' Setup';
 $meta['head_data'] = '
 	<link rel="stylesheet" type="text/css" media="screen" href="css/board.css" />
+	<style>' . $style . '</style>
 	<script type="text/javascript">//<![CDATA[
 		var game_id = "'.$_SESSION['game_id'].'";
 		var color = "'.$Game->get_my_color( ).'";
 		var rootUrl = "' . $GLOBALS['_ROOT_URI'] . '";
+		var theme = "' . $theme['filesdir'] . '";
+		var shipGraphics = ' . json_encode($shipGraphics) . ';
 	//]]></script>
 	<script type="text/javascript" src="scripts/setup.js"></script>
 ';

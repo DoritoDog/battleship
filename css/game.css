@@ -141,8 +141,8 @@ div.board div.side {
   text-align: center
 }
 
-div.v-bow {
-  background-image: url("../images/v_bow.gif")
+/* div.v-bow {
+  background-image: url("../images/classic/v_bow.gif")
 }
 
 div.v-fore {
@@ -251,7 +251,7 @@ div.h-escourt {
 
 div.h-gunboat {
   background-image: url("../images/gunboat.png");
-}
+} */
 
 div.board div.prevshot {
   border: 2px solid yellow;
