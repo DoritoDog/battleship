@@ -225,6 +225,9 @@ EOF;
 				<li'.get_active('messages', 'read', 'send').'><a href="messages.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(New Messages | Total Messages)"'.(($allow_blink && $menu_data['new_msgs']) ? ' class="blink"' : '').'>Messages <span class="sep">(</span> '.$menu_data['new_msgs'].' <span class="sep">|</span> '.$menu_data['msgs'].' <span class="sep">)</span></a>
 				</li>
 
+				<li'.get_active('leaderboard').'>
+					<a href="leaderboard.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Leaderboard</a>
+				</li>
 				<li'.get_active('stats').'><a href="stats.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Statistics</a></li>
 				<li'.get_active('prefs').'><a href="prefs.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Preferences</a></li>
 				<li'.get_active('profile').'><a href="profile.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Profile</a></li>

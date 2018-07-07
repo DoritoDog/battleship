@@ -402,6 +402,9 @@ class Game
 
 		$this->id = $insert_id;
 
+		$this->_mysql->insert('game_players', ['player_id' => $_P['white_id'], 'game_id' => $this->id]);
+		$this->_mysql->insert('game_players', ['player_id' => $_P['black_id'], 'game_id' => $this->id]);
+
 		$this->_create_blank_boards( );
 		Email::send('invite', $_P['black_id'], array('opponent' => $GLOBALS['_PLAYERS'][$_P['white_id']]));
 
@@ -720,6 +723,45 @@ class Game
 	public function get_history() {
 		$board = $this->_history[4]['white_board'];
 		return $this->_boards['player']->get_board_ascii($board);
+	}
+
+	protected function check_for_late_move() {
+		$difference = (time() - $this->last_move);
+		if ($this->get_my_turn() && $difference > $this->time_to_move) {
+			$player_id = $this->_players['opponent']['player_id'];
+			$late_moves = $this->_mysql->fetch_assoc("SELECT `late_moves` FROM `game_player`
+																								WHERE `player_id` = $player_id AND
+																								`game_id` = $this->id")['late_moves'];
+			if ((int)$late_moves >= 3) {
+				
+			}
+
+			$this->_mysql->query("UPDATE `game_player` SET `late_moves` = `late_moves` + 1
+														WHERE `player_id` = $player_id AND `game_id` = $this->id");
+		}
+		else {
+			$this->_mysql->query("UPDATE `game_player` SET `late_moves` = 0
+														WHERE `player_id` = $player_id AND `game_id` = $this->id");
+		}
+	}
+
+	public function cron_job() {
+		// Pull the data from the database about which timers are ticking.
+		// Check if any of those timers have run out
+		// Update player moves and email if necessary
+		$difference = (time() - $this->last_move);
+		if ($difference > $this->time_to_move) {
+			$player_id = $this->_players['opponent']['player_id'];
+			$late_moves = $this->_mysql->fetch_assoc("SELECT `late_moves` FROM `game_player`
+																								WHERE `player_id` = $player_id AND
+																								`game_id` = $this->id")['late_moves'];
+			if ((int)$late_moves >= 3) {
+				resign($player_id);
+			}
+
+			$this->_mysql->query("UPDATE `game_player` SET `late_moves` = `late_moves` + 1
+														WHERE `player_id` = $player_id AND `game_id` = $this->id");
+		}
 	}
 
 
@@ -1634,7 +1676,6 @@ class Game
 				$this->_mysql->insert(self::GAME_BOARD_TABLE, array('white_board' => $white_board), " WHERE game_id = '{$this->id}' AND move_date = '{$boards[0]['move_date']}' ");
 			}
 		}
-
 		// update the game modified date
 		if ($update_modified) {
 			$this->_mysql->insert(self::GAME_TABLE, array('modify_date' => NULL), " WHERE game_id = '{$this->id}' ");

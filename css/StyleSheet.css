@@ -55,3 +55,39 @@
 .friends-table th {
   color: darkgrey;
 }
+
+/* Start of leaderboard */
+.tabs {
+  display: flex;
+  justify-content: center;
+}
+
+.tab {
+  background-color: #354161;
+  color: white;
+  outline: none;
+  border: 1px solid black;
+  width: 100px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background-color: #2d3752;
+  color: whitesmoke;
+}
+
+.leaderboard-columns {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.leaderboard-column {
+  display: inline-block;
+  margin: 5px;
+  color: blue;
+  width: 30%;
+
+  background: lightslategrey;
+}
