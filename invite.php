@@ -24,8 +24,7 @@ if (isset($_POST['invite'])) {
 		Flash::store('Invitation Sent Successfully', 'setup.php?id='.$game_id.$GLOBALS['_&_DEBUG_QUERY']);
 	}
 	catch (MyException $e) {
-		var_dump($e);
-		//Flash::store('Invitation FAILED !', false);
+		Flash::store('Invitation FAILED !', false);
 	}
 }
 

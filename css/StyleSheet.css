@@ -56,10 +56,13 @@
   color: darkgrey;
 }
 
-/* Start of leaderboard */
 .tabs {
   display: flex;
   justify-content: center;
+}
+
+.leaderboard-modes {
+  margin-top: 10px;
 }
 
 .tab {
@@ -84,12 +87,7 @@
 }
 
 .leaderboard-column {
-  display: inline-block;
-  margin: 5px;
-  color: blue;
-  width: 30%;
-
-  background: lightslategrey;
+  width: 80%;
 }
 
 .timer {
@@ -101,5 +99,9 @@
 .timer-container {
   font-size: 26px;
   transform: translate(0, -70px);
+  text-align: center;
+}
+
+.text-center {
   text-align: center;
 }
