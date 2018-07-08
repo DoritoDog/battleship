@@ -350,7 +350,7 @@ function ajax_refresh( ) {
 	refresh_timer = setTimeout('ajax_refresh()', refresh_timeout);
 }
 
-var updateFocus = true;
+var updateFocus = false;
 if (updateFocus) {
 	$(window).blur(function() {
 		$.post('ajax_helper.php', { focus: 0 }, (data, status) => { });
@@ -360,3 +360,34 @@ if (updateFocus) {
 	});
 }
 
+function countdown() {
+	var countdownDate = new Date(lastMove).getTime();
+    var x = setInterval(function() {
+        var now = new Date().getTime();
+				var difference = countdownDate - now;
+
+        var days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+				var seconds = Math.floor((difference % (1000 * 60)) / 1000);
+				
+				days = days > 9 ? days : '0' + days;
+				hours = hours > 9 ? hours : '0' + hours;
+				minutes = minutes > 9 ? minutes : '0' + minutes;
+				seconds = seconds > 9 ? seconds : '0' + seconds;
+				
+				if (difference < 0) {
+					days = '00';
+					hours = '00';
+					minutes = '00';
+					seconds = '00';
+				}
+
+        $('#days').html(days);
+        $('#hours').html(hours);
+        $('#minutes').html(minutes);
+        $('#seconds').html(seconds);
+    }, 1000);
+}
+
+window.onload = countdown;

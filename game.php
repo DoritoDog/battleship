@@ -41,6 +41,8 @@ catch (MyException $e) {
 	exit;
 }
 
+$mysql = Mysql::get_instance();
+
 $players = $Game->get_players( );
 $Chat = new Chat($_SESSION['player_id'], $_SESSION['game_id']);
 $chat_data = $Chat->get_box_list( );
@@ -126,6 +128,9 @@ if (('Finished' != $Game->state) && $Game->get_my_turn( ) && ! $no_turn) {
 	$info_bar .= ' <span class="shots">'.$Game->method.' '.plural($shots, 'Shot').': </span>';
 }
 
+$move_date = $mysql->fetch_assoc("SELECT * FROM bs2_game_board ORDER BY move_date DESC LIMIT 1")['move_date'];
+$last_move = date('M d, Y H:i:s', (strtotime($move_date) + $Game->time_to_move));
+
 $total_boats = $Game->fleet_type == 'Russian' ? 10 : 5;
 $player_boats = $total_boats - count($Game->get_missing_boats($mine = true));
 $opponent_boats = $total_boats - count($Game->get_missing_boats($mine = false));
@@ -189,6 +194,7 @@ $meta['head_data'] = '
 		var rootUri = "' . $GLOBALS['_ROOT_URI'] . '";
 		var theme = "' . $theme['filesdir'] . '";
 		var shipGraphics = ' . json_encode($shipGraphics) . ';
+		var lastMove = "' . $last_move . '";
 	/*]]>*/</script>
 ';
 
@@ -226,6 +232,16 @@ echo get_header($meta);
 
 			<div id="chat">
 				<?php echo $chat_html; ?>
+			</div>
+
+			<div class="timer-container">
+				<h4>Time Left</h4>
+				<div class="timer">
+					<div id="days">00</div>:
+					<div id="hours">00</div>:
+					<div id="minutes">00</div>:
+					<div id="seconds">00</div>
+				</div>
 			</div>
 
 			<form id="game" method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>"><div class="formDiv">
