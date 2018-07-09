@@ -41,7 +41,6 @@ $players = $mysql->fetch_array("SELECT * FROM bs2_bs_player INNER JOIN
 $games = (int)$mysql->fetch_value("SELECT COUNT(`game_id`) FROM `bs2_game` WHERE (`white_id` = $player_id OR `black_id` = $player_id) AND `state` = 'Finished' AND `method` = '$method' AND `fleet_type` = '$fleet_type'");
 $games_won = (int)$mysql->fetch_value("SELECT COUNT(`game_id`) FROM `bs2_game` WHERE `winner` = $player_id AND `state` = 'Finished' AND `method` = '$method' AND `fleet_type` = '$fleet_type'");
 
-echo $games;
 $contents .= '<div class="leaderboard-column">';
 $contents .= '<table><tr><th>Username</th><th>Games Won</th><th>Games Played</th><th>Win Rate</th></tr>';
 foreach ($players as $player) {
