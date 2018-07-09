@@ -1,5 +1,7 @@
 <?php
 
+require_once('../includes/config.php');
+
 //Setup Database Connections
 $sqlconn = @mysql_connect(
   'localhost', $GLOBALS['_DEFAULT_DATABASE']['username'],
