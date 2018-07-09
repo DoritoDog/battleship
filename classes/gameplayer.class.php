@@ -220,7 +220,7 @@ class GamePlayer
 		$this->wins++;
 
 		// note the trailing space on the field name, it's not a typo
-		$this->_mysql->insert(self::EXTEND_TABLE, array('wins ' => 'wins + 1'), " WHERE player_id = '{$this->id}' ");
+		$this->_mysql->insert(self::EXTEND_TABLE, array('wins ' => 'wins + 1')," WHERE player_id = '{$this->id}' ");
 	}
 
 

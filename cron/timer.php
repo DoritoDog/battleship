@@ -51,8 +51,10 @@ while ($games_row = mysql_fetch_array($games)) {
 		if ($black_move) { $black_miss++; }
 		
 		if (($white_miss > 3) or ($black_miss > 3)) {
-			// This is enough to end the game without any side effects.
-      mysql_query("UPDATE bs2_game SET state = 'Finished' WHERE game_id = '$game_id'", $sqlconn);
+      // End the game by changing the state and registering the winner.
+      $winner_id = $white_miss > 3 ? $games_row['black_id'] : $games_row['white_id'];
+      mysql_query("UPDATE `bs2_game` SET state = 'Finished' WHERE `game_id` = '$game_id'", $sqlconn);
+      mysql_query("UPDATE `bs2_game` SET `winner` = $winner_id WHERE `game_id` = '$game_id'", $sqlconn);
     }
     else {
       mysql_query("UPDATE bs2_game SET white_miss = '$white_miss', black_miss = '$black_miss' WHERE game_id = '$game_id'", $sqlconn);

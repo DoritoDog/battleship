@@ -193,7 +193,6 @@ $meta['head_data'] = '
 		var hideBoard = "' . ($hide_board ? true : false) . '";
 		var rootUri = "' . $GLOBALS['_ROOT_URI'] . '";
 		var theme = "' . $theme['filesdir'] . '";
-		var shipGraphics = ' . json_encode($shipGraphics) . ';
 		var lastMove = "' . $last_move . '";
 	/*]]>*/</script>
 ';

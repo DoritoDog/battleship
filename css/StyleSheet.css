@@ -75,6 +75,10 @@
   cursor: pointer;
 }
 
+.tab[autofocus] {
+  background-color: #21283b;
+}
+
 .tab:hover {
   background-color: #2d3752;
   color: whitesmoke;

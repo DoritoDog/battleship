@@ -214,10 +214,13 @@ $left_content = '
 <h2>Find me an opponent</h2>
 <form method="post" action="">
 	<div><label for="method">Method</label><select id="method" name="method">'.$method_selection.'</select></div>
-		<div>
-			<label for="fleet_type">Fleet Type</label>
-			<select id="fleet_type" name="fleet_type">'.$fleet_selection.'</select>
-		</div>
+	<div>
+		<label for="fleet_type">Fleet Type</label>
+		<select id="fleet_type" name="fleet_type">'.$fleet_selection.'</select>
+	</div>
+	<div>
+		<label for="timer">Time To Move</label><select id="timer" name="timer">'.$timer_selection.'</select>
+	</div>
 	<input type="hidden" name="player_id" value="'.$_SESSION['player_id'].'">
 	<input type="submit" name="find_game" value="Search">
 </form>

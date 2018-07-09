@@ -150,6 +150,8 @@ class Game
 	 */
 	protected $_players;
 
+	protected $_winner;
+
 
 	/** protected property _boards
 	 *		Holds the battleship object references
@@ -452,6 +454,8 @@ class Game
 
 		$this->_players['opponent']['object']->add_win( );
 		$this->_players['player']['object']->add_loss( );
+		$this->_winner = $this->_players['opponent']['player_id'];
+		
 
 		$this->state = 'Finished';
 		$this->save( );
@@ -741,25 +745,6 @@ class Game
 		}
 		else {
 			$this->_mysql->query("UPDATE `game_player` SET `late_moves` = 0
-														WHERE `player_id` = $player_id AND `game_id` = $this->id");
-		}
-	}
-
-	public function cron_job() {
-		// Pull the data from the database about which timers are ticking.
-		// Check if any of those timers have run out
-		// Update player moves and email if necessary
-		$difference = (time() - $this->last_move);
-		if ($difference > $this->time_to_move) {
-			$player_id = $this->_players['opponent']['player_id'];
-			$late_moves = $this->_mysql->fetch_assoc("SELECT `late_moves` FROM `game_player`
-																								WHERE `player_id` = $player_id AND
-																								`game_id` = $this->id")['late_moves'];
-			if ((int)$late_moves >= 3) {
-				resign($player_id);
-			}
-
-			$this->_mysql->query("UPDATE `game_player` SET `late_moves` = `late_moves` + 1
 														WHERE `player_id` = $player_id AND `game_id` = $this->id");
 		}
 	}
@@ -1603,6 +1588,10 @@ class Game
 			$update_game['state'] = $this->state;
 		}
 
+		if ($game['winner'] != $this->_winner) {
+			$update_game['winner'] = $this->_winner;
+		}
+
 		call($game['white_ready']);
 		call($this->_players['white']['ready']);
 		if ($game['white_ready'] != (int) $this->_players['white']['ready']) {
@@ -1720,6 +1709,7 @@ class Game
 		if ( ! $match) {
 			$this->_players['player']['object']->add_win( );
 			$this->_players['opponent']['object']->add_loss( );
+			$this->_winner = $this->_players['player']['player_id'];
 
 			$this->state = 'Finished';
 
