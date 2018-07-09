@@ -88,7 +88,8 @@ foreach ($shipGraphics as $class => $graphic) {
 	$style .= "div.$class { background-image: url('".$GLOBALS['_ROOT_URI'].'images/'.$theme['filesdir'].'/'."$graphic') } \n";
 }
 
-$meta['title'] = GAME_NAME.' Game #'.$_SESSION['game_id'].' vs '.$Game->name.' Setup';
+$against = $Game->has_opponent() ? 'Waiting for a player...' : $Game->name;
+$meta['title'] = GAME_NAME.' Game #'.$_SESSION['game_id'].' vs '.$against.' Setup';
 $meta['head_data'] = '
 	<link rel="stylesheet" type="text/css" media="screen" href="css/board.css" />
 	<style>' . $style . '</style>

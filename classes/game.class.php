@@ -150,7 +150,7 @@ class Game
 	 */
 	protected $_players;
 
-	protected $_winner;
+	protected $_winner = 0;
 
 
 	/** protected property _boards
@@ -362,7 +362,7 @@ class Game
 
 		// translate (filter/sanitize) the data
 		$_P['white_id'] = $_P['player_id'];
-		$_P['black_id'] = is_null($opponent_id) ? $_P['opponent'] : $opponent_id;
+		$_P['black_id'] = is_null($opponent_id) ? null : $opponent_id;
 		$_P['method'] = $_P['method'];
 
 		// You can only play Russian mode with the Single, Multi or Salvo methods.
@@ -371,13 +371,23 @@ class Game
 		}
  
 		// create the game
-		$required = array(
-			'white_id',
-			'black_id',
-			'method',
-			'fleet_type',
-			'timer',
-		);
+		if (is_null($opponent_id)) {
+			$required = array(
+				'white_id',
+				'method',
+				'fleet_type',
+				'timer',
+			);
+		}
+		else {
+			$required = array(
+				'white_id',
+				'black_id',
+				'method',
+				'fleet_type',
+				'timer',
+			);
+		}
 
 		$key_list = $required;
 
@@ -395,7 +405,7 @@ class Game
 
 		// THIS IS THE ONLY PLACE IN THE CLASS WHERE IT BREAKS THE _pull / save MENTALITY
 		// BECAUSE I NEED THE INSERT ID FOR THE REST OF THE GAME FUNCTIONALITY
-
+		
 		$insert_id = $this->_mysql->insert(self::GAME_TABLE, $_DATA);
 
 		if (empty($insert_id)) {
@@ -404,11 +414,10 @@ class Game
 
 		$this->id = $insert_id;
 
-		$this->_mysql->insert('game_players', ['player_id' => $_P['white_id'], 'game_id' => $this->id]);
-		$this->_mysql->insert('game_players', ['player_id' => $_P['black_id'], 'game_id' => $this->id]);
+		$this->_create_blank_boards();
 
-		$this->_create_blank_boards( );
-		Email::send('invite', $_P['black_id'], array('opponent' => $GLOBALS['_PLAYERS'][$_P['white_id']]));
+		if (!is_null($opponent_id))
+			Email::send('invite', $_P['black_id'], array('opponent' => $GLOBALS['_PLAYERS'][$_P['white_id']]));
 
 		// set the modified date
 		$this->_mysql->insert(self::GAME_TABLE, array('modify_date' => NULL), " WHERE game_id = '{$this->id}' ");
@@ -417,6 +426,10 @@ class Game
 		$this->_pull();
 
 		return $this->id;
+	}
+
+	public function has_opponent() {
+		return is_null($this->_players['opponent']['player_id']);
 	}
 
 
@@ -1158,12 +1171,57 @@ class Game
 		if ($missing) {
 			$return = "Sunk Boats:";
 			foreach ($missing as $bow => $null) {
-				switch ($bow) {
-					case 'a' : $return .= "\n\tCarrier"; break;
-					case 'f' : $return .= "\n\tBattleship"; break;
-					case 'j' : $return .= "\n\tCruiser"; break;
-					case 'm' : $return .= "\n\tSubmarine"; break;
-					case 'p' : $return .= "\n\tDestroyer"; break;
+				if ($this->fleet_type == 'Russian') {
+					switch ($bow) {
+						case 'a':
+							$return .= "\n\tBattleship";
+							break;
+
+						case 'e':
+							$return .= "\n\tCruiser";
+							break;
+						
+						case 'h':
+							$return .= "\n\tSubmarine";
+							break;
+
+						case 'k':
+						$return .= "\n\tDestroyer";
+						break;
+						
+						case 'm':
+						$return .= "\n\tFrigate";
+						break;
+
+						case 'o':
+						$return .= "\n\tMonitor";
+						break;
+
+						case 'q':
+						$return .= "\n\tGunboat";
+						break;
+
+						case 'r':
+						$return .= "\n\tEscourt";
+						break;
+
+						case 's':
+						$return .= "\n\tCorvette";
+						break;
+
+						case 't':
+						$return .= "\n\tCartel";
+						break;
+					}
+				}
+				else {
+					switch ($bow) {
+						case 'a' : $return .= "\n\tCarrier"; break;
+						case 'f' : $return .= "\n\tBattleship"; break;
+						case 'j' : $return .= "\n\tCruiser"; break;
+						case 'm' : $return .= "\n\tSubmarine"; break;
+						case 'p' : $return .= "\n\tDestroyer"; break;
+					}
 				}
 			}
 		}
@@ -1337,14 +1395,14 @@ class Game
 		call(__METHOD__);
 
 		// make sure the player has placed all the boats
-		if (count($this->get_missing_boats( ))) {
+		if (count($this->get_missing_boats())) {
 			throw new MyException(__METHOD__.': All boats must be placed before finalizing setup');
 		}
 
 		$this->_players['player']['ready'] = true;
 
 		// check for readiness
-		$this->test_ready( );
+		$res = $this->test_ready();
 
 		$this->save( );
 	}
@@ -1551,6 +1609,7 @@ class Game
 					, white_ready
 					, black_ready
 					, modify_date
+					, winner
 				FROM ".self::GAME_TABLE."
 				WHERE game_id = '{$this->id}'
 			";
@@ -1781,7 +1840,7 @@ class Game
 	 */
 	static public function get_list($player_id = 0, $all = true)
 	{
-		$Mysql = Mysql::get_instance( );
+		$Mysql = Mysql::get_instance();
 
 		$player_id = (int) $player_id;
 
@@ -1817,6 +1876,7 @@ class Game
 			ORDER BY state ASC
 				, last_move ASC
 		";
+
 		$list = $Mysql->fetch_array($query);
 
 		if (0 != $player_id) {

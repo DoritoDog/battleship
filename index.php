@@ -23,7 +23,6 @@ $meta['foot_data'] = '<div id="sounds"></div>';
 
 // grab the list of games
 $list = Game::get_list($_SESSION['player_id']);
-
 $contents = '';
 
 $table_meta = array(
@@ -46,6 +45,37 @@ $table_format = array(
 $contents .= '
 	<div class="tableholder">
 		'.get_table($table_format, $list, $table_meta).'
+	</div>';
+
+$table_meta = array(
+	'sortable' => true,
+	'no_data' => '<p>There are no open games to show</p>',
+	'caption' => 'Open Games',
+);
+$table_format = array(
+	array('SPECIAL_HTML', 'true', 'id="g[[[game_id]]]"') ,
+	array('ID', 'game_id') ,
+	array('Player #1', '[[[username]]]') ,
+	array('Method', 'method'),
+	array('Fleet Type', '[[[fleet_type]]]'),
+	array('Timer', 'timer'),
+	array('Created', '[[[create_date]]]'),
+	array('Join Game', '
+	<form method="post" action="invite.php">
+	<input type="hidden" name="join_game" value="[[[game_id]]]">
+	<input type="submit" value="Join">
+	</form>
+	'),
+);
+$query = "SELECT bs2_game.*, player.username
+					FROM bs2_game
+					INNER JOIN player ON bs2_game.white_id = player.player_id
+					WHERE bs2_game.black_id IS NULL AND bs2_game.state = 'Waiting'";
+$pending_list = Mysql::get_instance()->fetch_array($query);
+$contents .= '
+	<br>
+	<div class="tableholder">
+		'.get_table($table_format, $pending_list, $table_meta).'
 	</div>';
 
 // create the lobby

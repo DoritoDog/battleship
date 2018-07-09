@@ -260,7 +260,7 @@ $('span.ships').click( function() {
 		type: 'POST',
 		url: 'ajax_helper.php',
 		data: 'shipcheck=1&id='+id,
-		success: (msg) => { }
+		success: (msg) => { alert(msg) }
 	});
 
 	return false;

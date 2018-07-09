@@ -47,11 +47,6 @@
   border-radius: 3px;
 }
 
-.half-col {
-  float: left;
-  width: 50%;
-}
-
 .friends-table th {
   color: darkgrey;
 }
