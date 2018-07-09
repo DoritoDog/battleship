@@ -1,8 +1,14 @@
 <?php
 
 //Setup Database Connections
-$sqlconn = @mysql_connect('localhost', 'root', '');
-@mysql_select_db('battleship', $sqlconn) or die ("Unable to connect to Battleship DB");
+$sqlconn = @mysql_connect(
+  'localhost', $GLOBALS['_DEFAULT_DATABASE']['username'],
+  $GLOBALS['_DEFAULT_DATABASE']['password']
+);
+@mysql_select_db(
+  $GLOBALS['_DEFAULT_DATABASE']['database'],
+  $sqlconn
+) or die ("Unable to connect to Battleship DB");
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
