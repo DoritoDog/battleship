@@ -776,18 +776,16 @@ class Game
 	{
 		call(__METHOD__);
 
-		$this->_pull();
-
 		if ( ! isset($this->_players['player'])) {
 			throw new MyException(__METHOD__.': Player session id is missing');
 		}
 
 		if ($type == 'first') {
-			$color = $this->get_my_color();// $this->_players['player']['color'];
+			$color = $this->_players['player']['color'];
 			$theirs = false;
 		}
 		else {
-			$color = $this->_players['opponent']['color'];// ('white' == $this->_players['player']['color']) ? 'black' : 'white';
+			$color = ('white' == $this->_players['player']['color']) ? 'black' : 'white';
 			$theirs = ! ('Finished' == $this->state);
 		}
 		call($color);

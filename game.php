@@ -260,6 +260,7 @@ echo get_header($meta);
 		<audio id="audio" src="sounds/turn.mp3" autostart="false" ></audio>
 <?php
 
+var_dump($Game);
 call($GLOBALS);
 echo get_footer($meta);
 
