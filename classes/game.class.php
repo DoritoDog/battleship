@@ -776,6 +776,8 @@ class Game
 	{
 		call(__METHOD__);
 
+		$this->_pull();
+
 		if ( ! isset($this->_players['player'])) {
 			throw new MyException(__METHOD__.': Player session id is missing');
 		}
