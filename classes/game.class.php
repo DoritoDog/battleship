@@ -781,11 +781,11 @@ class Game
 		}
 
 		if ($type == 'first') {
-			$color = $this->_players['player']['color'];
+			$color = $this->get_my_color();// $this->_players['player']['color'];
 			$theirs = false;
 		}
 		else {
-			$color = ('white' == $this->_players['player']['color']) ? 'black' : 'white';
+			$color = $this->_players['opponent']['color'];// ('white' == $this->_players['player']['color']) ? 'black' : 'white';
 			$theirs = ! ('Finished' == $this->state);
 		}
 		call($color);

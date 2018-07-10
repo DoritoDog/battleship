@@ -201,9 +201,6 @@ $meta['foot_data'] = '
 	<script type="text/javascript" src="scripts/game.js"></script>
 ';
 
-var_dump($Game->get_my_color());
-var_dump($Game->get_my_turn());
-
 echo get_header($meta);
 
 ?>
