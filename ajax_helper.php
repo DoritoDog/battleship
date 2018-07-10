@@ -239,7 +239,7 @@ if (isset($_POST['method'])) {
 					break;
 			} // end method switch
 
-			$return['board'] = $Game->get_board_html('first', true);
+			$return['board'] = $Game->get_board_html('first', false);
 			$return['boats'] =  $Game->get_boats_html();
 			$return['missingBoats'] = $Game->get_missing_boats(true);
 			$return['fleetType'] = $Game->fleet_type;

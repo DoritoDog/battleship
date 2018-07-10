@@ -798,7 +798,7 @@ class Game
 				$index = 1;
 				while (is_null($this->_history[$index][$color.'_board'])) {
 					$index++;
-			}
+				}
 				$board = $this->_history[$index][$color.'_board'];
 			}
 			call($board);
