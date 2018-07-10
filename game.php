@@ -202,7 +202,7 @@ $meta['foot_data'] = '
 ';
 
 var_dump($Game->get_my_color());
-var_dump($Game-get_my_turn());
+var_dump($Game->get_my_turn());
 
 echo get_header($meta);
 
