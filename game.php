@@ -1,5 +1,4 @@
 <?php
-sleep(2);
 
 require_once 'includes/inc.global.php';
 

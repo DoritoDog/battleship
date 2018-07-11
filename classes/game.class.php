@@ -1762,7 +1762,12 @@ class Game
 		$color = $this->_players['player']['opp_color'];
 		call($color);
 
-		$match = preg_match('/[a-q]/i', $this->_boards[$color]->board);
+		if ($this->method == 'Russian') {
+			$match = preg_match('/[a-t]/i', $this->_boards[$color]->board);
+		}
+		else {
+			$match = preg_match('/[a-q]/i', $this->_boards[$color]->board);
+		}
 		call($match);
 
 		if ( ! $match) {
