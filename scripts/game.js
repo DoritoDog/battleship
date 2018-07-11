@@ -326,8 +326,7 @@ function ajax_refresh() {
 		url: 'ajax_helper.php',
 		data: 'refresh=1',
 		success: function (msg) {
-			var res = JSON.parse(msg);
-			if (msg.last_move != last_move) {
+			if (msg != last_move) {
 				// The turns have changed. Play the sound.
 				playTurnSound();
 
