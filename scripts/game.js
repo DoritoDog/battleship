@@ -392,16 +392,14 @@ function countdown() {
 
 window.onload = countdown;
 
-// Display the playerId we just got.
-$('#playerId').html('playerId: ' + player_id);
-
-// Get the lastPlayerId from the cookie and display it.
+// Get the lastPlayerId from the cookie.
 var decodedCookie = decodeURIComponent(document.cookie);
 var cookieArray = decodedCookie.split(';');
 var lastPlayerId = cookieArray[1].substring(14);
-$('#lastPlayerId').html('lastPlayerId: ' + lastPlayerId);
 
+// Check.
 if (player_id != lastPlayerId) {
+	alert('map bug averted!');
 	window.location = window.location.href;
 }
 
