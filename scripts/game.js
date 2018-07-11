@@ -395,15 +395,15 @@ function countdown() {
 
 window.onload = countdown;
 
-// Get the lastPlayerId from the cookie.
-var decodedCookie = decodeURIComponent(document.cookie);
-var cookieArray = decodedCookie.split(';');
-var lastPlayerId = cookieArray[1].substring(14);
+// // Get the lastPlayerId from the cookie.
+// var decodedCookie = decodeURIComponent(document.cookie);
+// var cookieArray = decodedCookie.split(';');
+// var lastPlayerId = cookieArray[1].substring(14);
 
-// Check.
-if (player_id != lastPlayerId) {
-	alert('map bug');
-}
+// // Check.
+// if (player_id != lastPlayerId) {
+// 	alert('map bug');
+// }
 
-// Update the lastPlayerId as a cookie for next time.
-document.cookie = "lastPlayerId=" + player_id;
+// // Update the lastPlayerId as a cookie for next time.
+// document.cookie = "lastPlayerId=" + player_id;
