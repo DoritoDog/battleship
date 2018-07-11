@@ -77,7 +77,12 @@ if (isset($_POST['join_game'])) {
 }
 
 $player_id = $_SESSION['player_id'];
-$friends = $mysql->fetch_array("SELECT player.player_id, player.username FROM `friends` INNER JOIN `player` ON friends.friend_id = player.player_id AND player.player_id != $player_id");
+
+$friends = $mysql->fetch_array("SELECT player.player_id, player.username
+FROM `bs2_friends` INNER JOIN `player` ON
+(bs2_friends.player_one = player.player_id OR bs2_friends.player_two = player.player_id)
+AND player.player_id != $player_id");
+
 $friends_selection = '';
 foreach ($friends as $friend) {
 	$friends_selection .= '<option value="' . $friend['player_id'] . '">' . $friend['username'] . '</option>';

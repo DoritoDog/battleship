@@ -64,8 +64,8 @@ if (isset($_POST['friend_request'])) {
 
 if (isset($_POST['unfriend'])) {
   $friend_id = $_POST['unfriend'];
-  $mysql->query("DELETE FROM `friends` WHERE `friend_id` = $friend_id AND `player_id` = $player_id");
-  $mysql->query("DELETE FROM `friends` WHERE `friend_id` = $player_Id AND `player_id` = $friend_id");
+  $mysql->query("DELETE FROM `bs2_friends` WHERE (`player_one` = $friend_id AND `player_two` = $player_id)
+                 OR (`player_one` = $player_id AND `player_two` = $friend_id)");
 }
 
 if (isset($_POST['accept'])) {
@@ -73,12 +73,17 @@ if (isset($_POST['accept'])) {
   $request = $mysql->fetch_assoc("SELECT * FROM `friend_requests` WHERE `id` = $request_id");
   $mysql->query("DELETE FROM `friend_requests` WHERE `id` = $request_id");
 
-  $mysql->insert('friends', ['player_id' => $request['reciever_id'], 'friend_id' => $request['sender_id']]);
-  $mysql->insert('friends', ['player_id' => $request['sender_id'], 'friend_id' => $request['reciever_id']]);
+  $mysql->insert(
+    'bs2_friends',
+    ['player_one' => $request['sender_id'], 'player_two' => $request['reciever_id']]
+  );
+
+  header('friends.php');
 }
 else if (isset($_POST['decline'])) {
   $request_id = $_POST['decline'];
   $mysql->query("DELETE FROM `friend_requests` WHERE `id` = $request_id");
+  header('friends.php');
 }
 
 if (isset($_POST['player-search'])) {
@@ -100,8 +105,9 @@ if (isset($_POST['player-search'])) {
 else {
   $contents .= '<table class="friends-table"><div class="players-container">';
   
-  $query = "SELECT player.player_id, player.username FROM `friends`
-            INNER JOIN `player` ON friends.friend_id = player.player_id
+  $query = "SELECT player.player_id, player.username FROM `bs2_friends`
+            INNER JOIN `player` ON
+            (bs2_friends.player_one = player.player_id OR bs2_friends.player_two = player.player_id)
             AND player.player_id != $player_id";
   $friends = $mysql->fetch_array($query);
 
