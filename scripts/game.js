@@ -74,8 +74,6 @@ if (my_turn) {
 
 			// Sending one hit for validation.
 			$.post("ajax_helper.php", { shot: id }, (data, status) => {
-				// const index = data.indexOf('}') + 1;
-				// const response = JSON.parse(data.slice(0, index));
 				const response = JSON.parse(data);
 				didHit = response.value === 'true' ? true : false;
 
@@ -335,7 +333,8 @@ function ajax_refresh() {
 
 				// don't just reload( ), it tries to submit the POST again
 				if (reload) {
-					setTimeout(() => { window.location = window.location.href; }, 1000);
+					//setTimeout(() => { window.location = window.location.href; }, 1000);
+					window.location = window.location.href;
 				}
 			}
 		}

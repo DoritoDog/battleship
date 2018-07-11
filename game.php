@@ -243,8 +243,6 @@ echo get_header($meta);
 					<div id="seconds">00</div>
 				</div>
 			</div>
-			<div id="playerId">?</div>
-			<div id="lastPlayerId">?</div>
 
 			<form id="game" method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>"><div class="formDiv">
 				<input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>" />
