@@ -308,8 +308,11 @@ function ajax_refresh() {
 	// no debug redirect, just do it
 
 	// Keep checking for shots.
-	$.post('ajax_helper.php', { get_shots: 1 }, (data, status) => {
+	/*$.post('ajax_helper.php', { get_shots: 1 }, (data, status) => {
 		const response = JSON.parse(data);
+		if (response.error) {
+			alert(JSON.stringify(response.error));
+		}
 		// If there are no shots, ajax_helper.php returns [].
 		if (response.length !== 0 && response.id > highestShotId) {
 			highestShotId = response.id;
@@ -319,7 +322,7 @@ function ajax_refresh() {
 			// Remove the class after one second.
 			setTimeout(() => { $('#contents').removeClass(flash) }, 1000);
 		}
-	});
+	});*/
 
 	$.ajax({
 		type: 'POST',

@@ -137,7 +137,12 @@ if (isset($_POST['get_shots'])) {
 	}*/
 
 	// Fill in the hit.
-	$response['hit'] = $Game->test_hit($response['coordinate']);
+	try {
+		$response['hit'] = $Game->test_hit($response['coordinate']);
+	}
+	catch (Exception $e) {
+		$response['error'] = $e;
+	}
 
 	echo json_encode($response);
 	exit;
