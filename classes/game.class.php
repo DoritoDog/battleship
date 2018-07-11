@@ -1762,7 +1762,7 @@ class Game
 		$color = $this->_players['player']['opp_color'];
 		call($color);
 
-		if ($this->method == 'Russian') {
+		if ($this->fleet_type == 'Russian') {
 			$match = preg_match('/[a-t]/i', $this->_boards[$color]->board);
 		}
 		else {
