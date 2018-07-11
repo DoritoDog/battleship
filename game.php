@@ -194,6 +194,7 @@ $meta['head_data'] = '
 		var rootUri = "' . $GLOBALS['_ROOT_URI'] . '";
 		var theme = "' . $theme['filesdir'] . '";
 		var lastMove = "' . $last_move . '";
+		var player_id = ' . $_SESSION['player_id'] . ';
 	/*]]>*/</script>
 ';
 
@@ -242,6 +243,8 @@ echo get_header($meta);
 					<div id="seconds">00</div>
 				</div>
 			</div>
+			<div id="playerId">?</div>
+			<div id="lastPlayerId">?</div>
 
 			<form id="game" method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>"><div class="formDiv">
 				<input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>" />
@@ -260,8 +263,7 @@ echo get_header($meta);
 		<audio id="audio" src="sounds/turn.mp3" autostart="false" ></audio>
 <?php
 
-var_dump($_COOKIE);
-var_dump($_SESSION);
+
 call($GLOBALS);
 echo get_footer($meta);
 

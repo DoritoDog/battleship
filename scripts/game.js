@@ -326,7 +326,8 @@ function ajax_refresh() {
 		url: 'ajax_helper.php',
 		data: 'refresh=1',
 		success: function (msg) {
-			if (msg != last_move) {
+			var res = JSON.parse(msg);
+			if (msg.last_move != last_move) {
 				// The turns have changed. Play the sound.
 				playTurnSound();
 
@@ -391,3 +392,15 @@ function countdown() {
 }
 
 window.onload = countdown;
+
+// Display the playerId we just got.
+$('#playerId').html('playerId: ' + player_id);
+
+// Get the lastPlayerId from the cookie and display it.
+var decodedCookie = decodeURIComponent(document.cookie);
+var cookieArray = decodedCookie.split(';');
+var lastPlayerId = cookieArray[1].substring(14);
+$('#lastPlayerId').html('lastPlayerId: ' + lastPlayerId);
+
+// Update the lastPlayerId as a cookie for next time.
+document.cookie = "lastPlayerId=" + player_id;

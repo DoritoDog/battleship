@@ -116,7 +116,10 @@ $Game = new Game((int) $_SESSION['game_id']);
 
 // run the game refresh check
 if (isset($_POST['refresh'])) {
-	echo $Game->last_move;
+	$response = new stdClass();
+	$response->last_move = $Game->last_move;
+	$response->playerId = $_SESSION['playerId'];
+	echo json_encode($response);
 	exit;
 }
 
