@@ -306,7 +306,7 @@ function ajax_refresh() {
 	// no debug redirect, just do it
 
 	// Keep checking for shots.
-	/*$.post('ajax_helper.php', { get_shots: 1 }, (data, status) => {
+	$.post('ajax_helper.php', { get_shots: 1 }, (data, status) => {
 		const response = JSON.parse(data);
 		if (response.error) {
 			alert(JSON.stringify(response.error));
@@ -320,7 +320,7 @@ function ajax_refresh() {
 			// Remove the class after one second.
 			setTimeout(() => { $('#contents').removeClass(flash) }, 1000);
 		}
-	});*/
+	});
 
 	$.ajax({
 		type: 'POST',
@@ -333,8 +333,7 @@ function ajax_refresh() {
 
 				// don't just reload( ), it tries to submit the POST again
 				if (reload) {
-					//setTimeout(() => { window.location = window.location.href; }, 1000);
-					window.location = window.location.href;
+					setTimeout(() => { window.location = window.location.href; }, 1000);
 				}
 			}
 		}
