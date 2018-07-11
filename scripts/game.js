@@ -403,7 +403,6 @@ var lastPlayerId = cookieArray[1].substring(14);
 // Check.
 if (player_id != lastPlayerId) {
 	alert('map bug');
-	location.reload();
 }
 
 // Update the lastPlayerId as a cookie for next time.
