@@ -401,5 +401,9 @@ var cookieArray = decodedCookie.split(';');
 var lastPlayerId = cookieArray[1].substring(14);
 $('#lastPlayerId').html('lastPlayerId: ' + lastPlayerId);
 
+if (player_id != lastPlayerId) {
+	location.reload();
+}
+
 // Update the lastPlayerId as a cookie for next time.
 document.cookie = "lastPlayerId=" + player_id;
