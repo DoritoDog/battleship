@@ -260,9 +260,9 @@ echo get_header($meta);
 		<audio id="audio" src="sounds/turn.mp3" autostart="false" ></audio>
 <?php
 
-var_dump($GLOBALS['old_session']);
-
+var_dump($_COOKIE);
+var_dump($_SESSION);
 call($GLOBALS);
-echo get_footer($meta); 
+echo get_footer($meta);
 
 ?>

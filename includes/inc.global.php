@@ -161,7 +161,6 @@ if (defined('DEBUG') && DEBUG) {
 if (( ! defined('LOGIN') || LOGIN) && isset($Mysql)) {
 	$GLOBALS['Player'] = new GamePlayer( );
 	// this will redirect to login if failed
-	$GLOBALS['old_session'] = $_SESSION;
 	$GLOBALS['Player']->log_in( );
 
 	if (0 != $_SESSION['player_id']) {
