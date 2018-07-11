@@ -115,7 +115,7 @@ if ( ! isset($_SESSION['token'])) {
 	$_SESSION['token'] = md5(uniqid(rand( ), true));
 }
 
-var_dump($_SESSION);
+//var_dump($_SESSION);
 
 // set our DEBUG constant
 $GLOBALS['_&_DEBUG_QUERY'] = '';
@@ -162,7 +162,6 @@ if (( ! defined('LOGIN') || LOGIN) && isset($Mysql)) {
 	$GLOBALS['Player'] = new GamePlayer( );
 	// this will redirect to login if failed
 	$GLOBALS['Player']->log_in( );
-	var_dump($GLOBALS['Player']);
 
 	if (0 != $_SESSION['player_id']) {
 		$Message = new Message($_SESSION['player_id'], $GLOBALS['Player']->is_admin);

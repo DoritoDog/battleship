@@ -242,12 +242,12 @@ class Player
 
 			if ($this->_get_session( )) {
 				call('SESSION LOGIN');
-				var_dump("SESSION LOGIN");
+				$GLOBALS['which_login'] = 'SESSION LOGIN';
 				$this->is_logged = true;
 			}
 			elseif ($this->_get_cookie( )) {
 				call('COOKIE LOGIN');
-				var_dump("COOKIE LOGIN");
+				$GLOBALS['which_login'] = 'COOKIE LOGIN';
 				$this->is_logged = true;
 				$this->_set_cookie( );
 			}
