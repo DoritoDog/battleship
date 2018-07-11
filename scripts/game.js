@@ -308,9 +308,6 @@ function ajax_refresh() {
 	// Keep checking for shots.
 	$.post('ajax_helper.php', { get_shots: 1 }, (data, status) => {
 		const response = JSON.parse(data);
-		if (response.error) {
-			alert(JSON.stringify(response.error));
-		}
 		// If there are no shots, ajax_helper.php returns [].
 		if (response.length !== 0 && response.id > highestShotId) {
 			highestShotId = response.id;
@@ -393,15 +390,15 @@ function countdown() {
 
 window.onload = countdown;
 
-// // Get the lastPlayerId from the cookie.
-// var decodedCookie = decodeURIComponent(document.cookie);
-// var cookieArray = decodedCookie.split(';');
-// var lastPlayerId = cookieArray[1].substring(14);
+// Get the lastPlayerId from the cookie.
+var decodedCookie = decodeURIComponent(document.cookie);
+var cookieArray = decodedCookie.split(';');
+var lastPlayerId = cookieArray[1].substring(14);
 
-// // Check.
-// if (player_id != lastPlayerId) {
-// 	alert('map bug');
-// }
+// Check.
+if (player_id != lastPlayerId) {
+	alert('map bug');
+}
 
-// // Update the lastPlayerId as a cookie for next time.
-// document.cookie = "lastPlayerId=" + player_id;
+// Update the lastPlayerId as a cookie for next time.
+document.cookie = "lastPlayerId=" + player_id;
