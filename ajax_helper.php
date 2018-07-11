@@ -302,6 +302,8 @@ if (isset($_POST['resign'])) {
 	exit;
 }
 
+$test_variable = 'Snake casing is the best.';
+
 function post($url, $data) {
 	// use key 'http' even if you send the request to https://...
 	$options = array(
