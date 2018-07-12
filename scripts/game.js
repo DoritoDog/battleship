@@ -21,13 +21,6 @@ $('div.active')
 	.find('div.first')
 	.css('cursor', 'pointer')
 	.attr('title', 'Click to hide board');
-	
-function getHideBoard() {
-	var decodedCookie = decodeURIComponent(document.cookie);
-	var cookieArray = decodedCookie.split(';');
-	var hideBoard = cookieArray[2].substring(11);
-	return hideBoard == 0 ? false : true;
-}
 
 function toggleBoard () {
 	$this = $('div.first');
@@ -406,10 +399,22 @@ function countdown() {
 
 window.onload = countdown;
 
-// Get the lastPlayerId from the cookie.
-var decodedCookie = decodeURIComponent(document.cookie);
-var cookieArray = decodedCookie.split(';');
-var lastPlayerId = cookieArray[1].substring(14);
+function getCookie(key) {
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var cookieArray = decodedCookie.split(';');
+	for (let i = 0; i < cookieArray.length; i++) {
+		let cookie = cookieArray[i];
+		// Cookies have spaces after their semicolons.
+		if (cookie.startsWith(' ' + key)) {
+			let index = (cookie.indexOf('=') + 1);
+			return cookie.substring(index);
+		}
+	}
+
+	return false;
+}
+
+var lastPlayerId = getCookie('lastPlayerId');
 
 // Check.
 if (player_id != lastPlayerId && lastPlayerId != '') {
@@ -417,7 +422,8 @@ if (player_id != lastPlayerId && lastPlayerId != '') {
 	location.reload();
 }
 else {
-	if (!getHideBoard()) {
+	let hideBoard = getCookie('hideBoard') == 0 ? false : true;
+	if (!hideBoard) {
 		$('div.first').replaceWith(board_storage);
 		board_storage = false;
 		$('div.active').find('div.first').css('cursor', 'pointer').attr('title', 'Click to hide board');
