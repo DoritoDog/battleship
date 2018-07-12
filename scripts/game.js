@@ -412,17 +412,9 @@ var cookieArray = decodedCookie.split(';');
 var lastPlayerId = cookieArray[1].substring(14);
 
 // Check.
-
-alert(lastPlayerId == null);
-alert(lastPlayerId == '');
-
-if (player_id != lastPlayerId && lastPlayerId != null) {
-	if ($.browser.mozilla) {
-		alert(`player_id = ${player_id} | lastPlayerId = ${lastPlayerId}`);
-	}
-	else {
-		setTimeout(() => { location.reload(); }, 1000);
-	}
+if (player_id != lastPlayerId && lastPlayerId != '') {
+	// if ($.browser.mozilla)
+	location.reload();
 }
 else {
 	if (!getHideBoard()) {
