@@ -414,7 +414,7 @@ var lastPlayerId = cookieArray[1].substring(14);
 // Check.
 if (player_id != lastPlayerId) {
 	if ($.browser.mozilla) {
-		setTimeout(() => { window.location = window.location.href; }, 1000);
+		history.go(0);
 	}
 	else {
 		setTimeout(() => { location.reload(); }, 1000);
