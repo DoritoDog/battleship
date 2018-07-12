@@ -397,7 +397,6 @@ var lastPlayerId = cookieArray[1].substring(14);
 
 // Check.
 if (player_id != lastPlayerId) {
-	alert('mismatch');
 	location.reload();
 }
 
