@@ -397,7 +397,12 @@ var lastPlayerId = cookieArray[1].substring(14);
 
 // Check.
 if (player_id != lastPlayerId) {
-	location.reload();
+	if ($.browser.mozilla) {
+		history.go(0);
+	}
+	else {
+		location.reload();
+	}
 }
 
 // Update the lastPlayerId as a cookie for next time.
