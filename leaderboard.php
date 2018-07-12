@@ -45,10 +45,10 @@ foreach ($players as $player) {
   $games = (int)$mysql->fetch_value("SELECT COUNT(`game_id`) FROM `bs2_game`
   WHERE (`white_id` = {$player['player_id']} OR `black_id` = {$player['player_id']})
   AND `state` = 'Finished' AND `method` = '$method' AND `fleet_type` = '$fleet_type'");
-
-  $query = "SELECT COUNT(`game_id`) FROM `bs2_game` WHERE `winner` = {$player['player_id']} AND `state` = 'Finished' AND `method` = '$method' AND `fleet_type` = '$fleet_type'";
-  $games_won = (int)$mysql->fetch_value($query);
-  var_dump($query);
+  
+  $games_won = (int)$mysql->fetch_value("SELECT COUNT(`game_id`) FROM `bs2_game`
+  WHERE `winner` = {$player['player_id']} AND `state` = 'Finished'
+  AND `method` = '$method' AND `fleet_type` = '$fleet_type'");
 
   $contents .=
   "<tr>
