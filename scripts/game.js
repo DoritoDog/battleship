@@ -413,12 +413,7 @@ var lastPlayerId = cookieArray[1].substring(14);
 
 // Check.
 if (player_id != lastPlayerId) {
-	if ($.browser.mozilla) {
-		history.go(0);
-	}
-	else {
-		location.reload();
-	}
+	location.reload();
 }
 else {
 	if (!getHideBoard()) {
