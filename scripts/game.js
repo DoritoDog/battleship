@@ -412,7 +412,11 @@ var cookieArray = decodedCookie.split(';');
 var lastPlayerId = cookieArray[1].substring(14);
 
 // Check.
-if (player_id != lastPlayerId) {
+
+alert(lastPlayerId == null);
+alert(lastPlayerId == '');
+
+if (player_id != lastPlayerId && lastPlayerId != null) {
 	if ($.browser.mozilla) {
 		alert(`player_id = ${player_id} | lastPlayerId = ${lastPlayerId}`);
 	}
