@@ -417,7 +417,7 @@ if (player_id != lastPlayerId) {
 		setTimout(() => { window.location = window.location.href; });
 	}
 	else {
-		location.reload();
+		setTimout(() => { location.reload(); });
 	}
 }
 else {
