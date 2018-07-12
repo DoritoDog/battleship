@@ -993,7 +993,9 @@ class Game
 				$this->_boards['player']->get_missing_boats();
 		}
 		else {
-			return $this->_boards['opponent']->get_missing_boats( );
+			return $this->fleet_type === 'Russian' ?
+				$this->_boards['opponent']->get_missing_boats_russian() :
+				$this->_boards['opponent']->get_missing_boats();
 		}
 	}
 
