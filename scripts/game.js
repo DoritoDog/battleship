@@ -413,7 +413,7 @@ var lastPlayerId = cookieArray[1].substring(14);
 
 // Check.
 if (player_id != lastPlayerId) {
-	location.reload();
+	//location.reload();
 }
 else {
 	if (!getHideBoard()) {
