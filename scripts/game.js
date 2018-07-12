@@ -10,22 +10,41 @@ if (('finished' == state) || ('paused' == state)) {
 	$('div#boards').removeClass('active');
 }
 
+board_storage = $('div.active div.first');
+$('div.active div.first').replaceWith('<div class="noboard first panic" style="cursor:pointer;" title="Click to show board">HIDDEN</div>');
+
 // PANIC BUTTON
 // hides the players board when it's clicked in
 // case the opponent walked in the room
-$('div.active').on('click', 'div.first', function () {
-	$this = $(this);
+$('div.active')
+	.on('click', 'div.first', toggleBoard)
+	.find('div.first')
+	.css('cursor', 'pointer')
+	.attr('title', 'Click to hide board');
+	
+function getHideBoard() {
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var cookieArray = decodedCookie.split(';');
+	var hideBoard = cookieArray[2].substring(11);
+	return hideBoard == 0 ? false : true;
+}
+
+function toggleBoard () {
+	$this = $('div.first');
 	if (board_storage) {
 		$this.replaceWith(board_storage);
 		board_storage = false;
+		document.cookie = "hideBoard=0";
 	}
 	else {
 		board_storage = $this;
 		$this.replaceWith('<div class="noboard first panic" style="cursor:pointer;" title="Click to show board">HIDDEN</div>');
+		document.cookie = "hideBoard=1";
 	}
 
-	$.post('ajax_helper.php', { hide_board: !hideBoard }, (data, status) => { });
-}).find('div.first').css('cursor', 'pointer').attr('title', 'Click to hide board');
+	//$.post('ajax_helper.php', { hide_board: !hideBoard }, (data, status) => { });
+	$('div.active').find('div.first').css('cursor', 'pointer').attr('title', 'Click to hide board');
+}
 
 // set the previous shots
 var id = 0;
@@ -283,10 +302,6 @@ if (!my_turn && ('finished' != state)) {
 
 update_shots();
 
-if (hideBoard) {
-	$('div.active div.first').click();
-}
-
 
 function update_shots() {
 	$('span.shots img').remove();
@@ -348,7 +363,7 @@ function ajax_refresh() {
 	refresh_timer = setTimeout('ajax_refresh()', refresh_timeout);
 }
 
-var updateFocus = false;
+var updateFocus = true;
 if (updateFocus) {
 	$(window).blur(function () {
 		$.post('ajax_helper.php', { focus: 0 }, (data, status) => { });
@@ -388,6 +403,7 @@ function countdown() {
 	}, 1000);
 }
 
+
 window.onload = countdown;
 
 // Get the lastPlayerId from the cookie.
@@ -402,6 +418,13 @@ if (player_id != lastPlayerId) {
 	}
 	else {
 		location.reload();
+	}
+}
+else {
+	if (!getHideBoard()) {
+		$('div.first').replaceWith(board_storage);
+		board_storage = false;
+		$('div.active').find('div.first').css('cursor', 'pointer').attr('title', 'Click to hide board');
 	}
 }
 

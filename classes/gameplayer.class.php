@@ -472,7 +472,10 @@ class GamePlayer
 			{$WHERE}
 			ORDER BY P.username
 		";
-		$query = "SELECT player_id, username FROM player WHERE 1 ORDER BY username";
+		$query = "SELECT player.player_id, player.username, bs2_bs_player.wins, bs2_bs_player.losses
+							FROM `player`
+							INNER JOIN `bs2_bs_player` ON bs2_bs_player.player_id = player.player_id
+							WHERE 1 ORDER BY `username`";
 		$list = $Mysql->fetch_array($query);
 
 		return $list;

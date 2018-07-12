@@ -190,13 +190,13 @@ $meta['head_data'] = '
 		var my_turn = '.(( ! $Game->get_my_turn( ) || $no_turn) ? 'false' : 'true').';
 		var pre_hide_board = '.(($GLOBALS['Player']->pre_hide_board) ? 'true' : 'false').';
 		var gameMode = "' . $Game->method . '";
-		var hideBoard = "' . ($hide_board ? true : false) . '";
+		
 		var rootUri = "' . $GLOBALS['_ROOT_URI'] . '";
 		var theme = "' . $theme['filesdir'] . '";
 		var lastMove = "' . $last_move . '";
 		var player_id = ' . $_SESSION['player_id'] . ';
 	/*]]>*/</script>
-';
+';//var hideBoard = "' . ($hide_board ? true : false) . '";
 
 $meta['foot_data'] = '
 	<script type="text/javascript" src="scripts/game.js"></script>
