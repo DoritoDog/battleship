@@ -1,8 +1,10 @@
 Battleship v2.0
 
 2012-08-07
+07-13-2018
 
-Benjam Welker (http://iohelix.net)
+Originally by Benjam Welker (http://iohelix.net) in 2012,
+updated in 2018 by Kareem Belgharbi (https://github.com/DoritoDog)
 
 INSTALLATION
 ----------------------------------

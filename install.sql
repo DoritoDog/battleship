@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS themes
     `name` varchar(30) NOT NULL,
     description text,
     `filesdir` varchar(255) NOT NULL,
+    `snd_dir` varchar(255),
     PRIMARY KEY(`id`)
 );
 
@@ -90,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `bs2_game` (
   `black_ready` tinyint(1) NOT NULL DEFAULT '0',
   `method` enum('Single','Five','Salvo','Multi') COLLATE latin1_general_ci NOT NULL DEFAULT 'Single',
   `fleet_type` enum('Classic','Russian') NOT NULL DEFAULT 'Classic',
+  `timer` enum()
   `paused` tinyint(1) NOT NULL DEFAULT '0',
   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modify_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
