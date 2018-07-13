@@ -418,6 +418,7 @@ var lastPlayerId = getCookie('lastPlayerId');
 
 // Check.
 if (player_id != lastPlayerId && lastPlayerId != '') {
+	alert('bug averted!');
 	// if ($.browser.mozilla)
 	location.reload();
 }
