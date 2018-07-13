@@ -137,7 +137,7 @@ $opponent_boats = $total_boats - count($Game->get_missing_boats($mine = false));
 
 $hide_board = $Game->get_my_color() == 'white' ? $Game->hide_white : $Game->hide_black;
 
-$theme = Mysql::get_instance()->fetch_assoc("SELECT * FROM themes WHERE themes.id = (SELECT skin_id FROM bs2_bs_player WHERE bs2_bs_player.player_id = 1)");
+$theme = Mysql::get_instance()->fetch_assoc("SELECT * FROM themes WHERE themes.id = (SELECT skin_id FROM bs2_bs_player WHERE bs2_bs_player.player_id = {$_SESSION['player_id']})");
 $shipGraphics = [
 	'v-bow' => 'v_bow.gif',
 	'v-fore' => 'v_fore.gif',
