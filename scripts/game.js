@@ -422,7 +422,7 @@ if (player_id != lastPlayerId && lastPlayerId != '') {
 	// if ($.browser.mozilla)
 	location.reload();
 }
-else {
+else if (state != 'finished') {
 	let hideBoard = getCookie('hideBoard') == 0 ? false : true;
 	if (!hideBoard) {
 		$('div.first').replaceWith(board_storage);
