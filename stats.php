@@ -17,10 +17,10 @@ $contents = '';
 $list = GamePlayer::get_list(true);
 
 $table_meta = array(
-	'sortable' => true ,
-	'no_data' => '<p>There are no player stats to show</p>' ,
-	'caption' => 'Player Stats' ,
-	'init_sort_column' => array(1 => 1) ,
+	'sortable' => true,
+	'no_data' => '<p>There are no player stats to show</p>',
+	'caption' => 'Player Stats',
+	'init_sort_column' => array(1 => 1),
 );
 $table_format = array(
 	array('Player', 'username') ,

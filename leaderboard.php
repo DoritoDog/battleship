@@ -38,27 +38,36 @@ $contents .= '<div class="leaderboard-columns">';
 
 $players = $mysql->fetch_array("SELECT * FROM bs2_bs_player INNER JOIN
                                 player ON player.player_id = bs2_bs_player.player_id;");
+for ($i = 0; $i < count($players); $i++) {
+  $player = $players[$i];
 
-$contents .= '<div class="leaderboard-column">';
-$contents .= '<table><tr><th>Username</th><th>Games Won</th><th>Games Played</th><th>Win Rate</th></tr>';
-foreach ($players as $player) {
   $games = (int)$mysql->fetch_value("SELECT COUNT(`game_id`) FROM `bs2_game`
   WHERE (`white_id` = {$player['player_id']} OR `black_id` = {$player['player_id']})
   AND `state` = 'Finished' AND `method` = '$method' AND `fleet_type` = '$fleet_type'");
+  $players[$i]['games'] = $games;
   
   $games_won = (int)$mysql->fetch_value("SELECT COUNT(`game_id`) FROM `bs2_game`
   WHERE `winner` = {$player['player_id']} AND `state` = 'Finished'
   AND `method` = '$method' AND `fleet_type` = '$fleet_type'");
+  $players[$i]['games_won'] = $games_won;
 
-  $contents .=
-  "<tr>
-    <td>{$player['username']}</td>
-    <td>$games_won</td> 
-    <td>$games</td>
-    <td>" . ( $games > 0 ? (($games_won / $games) * 100) : 0) . "%</td>
-  </tr>";
+  $win_percent = round(($games > 0 ? (($games_won / $games) * 100) : 0), 2);
+  $players[$i]['win_percent'] = $win_percent;
 }
-$contents .= '</table></div>';
+
+$table_meta = [
+	'sortable' => true,
+	'no_data' => '<p>There are no player stats to show</p>',
+	'caption' => 'Leaderboard',
+	'init_sort_column' => array(1 => 1) ,
+];
+$table_format = array(
+	array('Player', '[[[username]]]'),
+	array('Games Won', '[[[games_won]]]'),
+	array('Games Played', '[[[games]]]'),
+	array('Win %', '[[[win_percent]]]%'),
+);
+$contents .= get_table($table_format, $players, $table_meta);
 
 $contents .= '</div>';
 
