@@ -91,14 +91,22 @@ CREATE TABLE IF NOT EXISTS `bs2_game` (
   `black_ready` tinyint(1) NOT NULL DEFAULT '0',
   `method` enum('Single','Five','Salvo','Multi') COLLATE latin1_general_ci NOT NULL DEFAULT 'Single',
   `fleet_type` enum('Classic','Russian') NOT NULL DEFAULT 'Classic',
-  `timer` enum()
+  `timer` enum('60', '120', '300', '600', '1800', '10080') NOT NULL DEFAULT '300',
+  `hide_white` tinyint(1) NOT NULL DEFAULT '1',
+  `hide_black` tinyint(1) NOT NULL DEFAULT '1',
+  `white_focused` tinyint(1) NOT NULL DEFAULT '0',
+  `black_focused` tinyint(1) NOT NULL DEFAULT '0',
+  `white_miss` tinyint(1) NOT NULL DEFAULT '0',
+  `black_miss` tinyint(1) NOT NULL DEFAULT '0',
   `paused` tinyint(1) NOT NULL DEFAULT '0',
+  `winner` int NOT NULL,
   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modify_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`game_id`),
   KEY `state` (`state`),
   KEY `white_id` (`white_id`),
-  KEY `black_id` (`black_id`)
+  KEY `black_id` (`black_id`),
+  FOREIGN KEY(`winner`) REFERENCES player(player_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 -- --------------------------------------------------------
@@ -243,22 +251,22 @@ CREATE TABLE IF NOT EXISTS `shots`
   `game_id` int NOT NULL,
   `coordinate` int NOT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`player_id`) REFERENCES player.player_id,
-  FOREIGN KEY (`game_id`) REFERENCES bs2_game.game_id
+  FOREIGN KEY (`player_id`) REFERENCES player(player_id),
+  FOREIGN KEY (`game_id`) REFERENCES bs2_game(game_id)
 );
 
 --
 -- Table structure for table `friends`
 --
 
-CREATE TABLE IF NOT EXISTS `friends`
+CREATE TABLE IF NOT EXISTS `bs2_friends`
 (
   `id` int NOT NULL AUTO_INCREMENT,
-  `player_id` int NOT NULL,
-  `friend_id` int NOT NULL,
+  `player_one` int NOT NULL,
+  `player_two` int NOT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`player_id`) REFERENCES player.player_id,
-  FOREIGN KEY (`friend_id`) REFERENCES player.player_id
+  FOREIGN KEY (`player_one`) REFERENCES player(player_id),
+  FOREIGN KEY (`player_two`) REFERENCES player(player_id)
 );
 
 --
